@@ -32,9 +32,9 @@ RUN curl -L ${WASMTIME_URL} | tar -xJ --wildcards --no-anchored --strip-componen
 # setup wasm-sdk
 ENV WASI_SDK_VERSION=16
 ENV WASI_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz
-RUN curl -L ${WASI_SDK_URL} | tar -xz -C /opt
-RUN ln -s /opt/wasi-sdk-${WASI_SDK_VERSION}.0/bin/clang /usr/bin/clang
-RUN ln -s /opt/wasi-sdk-${WASI_SDK_VERSION}.0/bin/clang++ /usr/bin/clang++
+ENV WASI_SDK_HOME=/opt/wasi-sdk/
+RUN mkdir -p ${WASI_SDK_HOME} && curl -L ${WASI_SDK_URL} | tar -xz -C ${WASI_SDK_HOME} --strip-components 1
+ENV PATH=${WASI_SDK_HOME}/bin:${PATH}
 
 # everything after this point is user specific
 USER vscode

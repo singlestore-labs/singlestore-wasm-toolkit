@@ -1,7 +1,7 @@
 all: power.wasm
 
 power.wasm:
-	/opt/wasi-sdk-14.0/bin/clang        \
+	clang     						    \
 	    --target=wasm32-unknown-wasi    \
 	    -mexec-model=reactor            \
 	    -s                              \
