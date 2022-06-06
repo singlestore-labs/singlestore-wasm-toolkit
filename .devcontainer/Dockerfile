@@ -30,11 +30,11 @@ ENV WASMTIME_URL=https://github.com/bytecodealliance/wasmtime/releases/download/
 RUN curl -L ${WASMTIME_URL} | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime
 
 # setup wasm-sdk
-ENV WASM_SDK_VERSION=16
-ENV WASM_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASM_SDK_VERSION}/wasi-sdk-${WASM_SDK_VERSION}.0-linux.tar.gz
-RUN curl -L ${WASM_SDK_URL} | tar -xz -C /opt
-RUN ln -s /opt/wasi-sdk-16.0/bin/clang /usr/bin/clang
-RUN ln -s /opt/wasi-sdk-16.0/bin/clang++ /usr/bin/clang++
+ENV WASI_SDK_VERSION=16
+ENV WASI_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz
+RUN curl -L ${WASI_SDK_URL} | tar -xz -C /opt
+RUN ln -s /opt/wasi-sdk-${WASI_SDK_VERSION}.0/bin/clang /usr/bin/clang
+RUN ln -s /opt/wasi-sdk-${WASI_SDK_VERSION}.0/bin/clang++ /usr/bin/clang++
 
 # everything after this point is user specific
 USER vscode
