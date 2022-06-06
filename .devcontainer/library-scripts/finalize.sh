@@ -9,7 +9,7 @@ rustup target add wasm32-unknown-unknown
 rustup target add wasm32-wasi
 
 # A code size profiler for wasm
-cargo install twiggy cargo-wasi cargo-expand
+cargo install twiggy cargo-wasi cargo-expand mdbook
 # wit-bindgen-cli
 cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli
 
