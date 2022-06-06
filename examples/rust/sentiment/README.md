@@ -5,7 +5,7 @@ A simple sentiment analysis function using [VADER Sentiment Analysis](https://cr
 ## Build
 
 ```sh
-cargo build
+cargo build --target wasm32-unknown-unknown
 ```
 
 ## Create Function
