@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cargo",
+      "group": "build",
+      "label": "build:debugger",
+      "command": "build",
+      "args": ["--package", "debugger"],
+      "problemMatcher": ["$rustc"]
+    }
+  ]
+}

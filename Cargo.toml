@@ -1,2 +1,2 @@
 [workspace]
-members = ["examples/rust/*"]
+members = ["examples/rust/*", "debugger"]
