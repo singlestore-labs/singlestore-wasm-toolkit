@@ -1,4 +1,4 @@
-record PolarityScores {
+record polarity-scores {
     compound: float64,
     positive: float64,
     negative: float64,
