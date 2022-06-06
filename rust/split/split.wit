@@ -1,0 +1,6 @@
+record subphrase {
+  str: string,
+  idx: s32
+}
+split-str: function(phrase: string, delim: string) -> list<subphrase>
+
