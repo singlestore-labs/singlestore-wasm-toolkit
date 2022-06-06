@@ -1,7 +1,7 @@
 all: split.wasm
 
 split.wasm:
-	/opt/wasi-sdk-14.0/bin/clang++      \
+	clang++                             \
 	    -fno-exceptions                 \
 	    --target=wasm32-unknown-wasi    \
 	    -mexec-model=reactor            \
