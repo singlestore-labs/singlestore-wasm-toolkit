@@ -1,0 +1,8 @@
+record PolarityScores {
+    compound: float64,
+    positive: float64,
+    negative: float64,
+    neutral: float64,
+}
+
+sentiment: function(input: string) -> polarity-scores
