@@ -29,7 +29,7 @@ ENV WASMTIME_VERSION=0.37.0
 ENV WASMTIME_URL=https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz
 RUN curl -L ${WASMTIME_URL} | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime
 
-# setup wasm-sdk
+# setup wasi-sdk
 ENV WASI_SDK_VERSION=16
 ENV WASI_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz
 ENV WASI_SDK_HOME=/opt/wasi-sdk/
