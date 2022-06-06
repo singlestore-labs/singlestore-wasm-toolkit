@@ -12,7 +12,10 @@ For more info on getting started using WASM UDFs with SingleStore try our [tutor
    ```bash
    export SINGLESTORE_LICENSE="singlestore license"
    ```
-2. Go to an example folder and checkout its README!
+1. Try the Run WASM Quickstart [here](./docs/Quickstart-1-Run-WASM.md)
+1. Try the Build WASM Quickstart for your preferred language
+   * [C/C++](./docs/Quickstart-2-Build-WASM-CPP.md)
+   * [Rust](./docs/Quickstart-2-Build-WASM-Rust.md)
 
 ## Resources
 
