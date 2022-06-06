@@ -1,0 +1,11 @@
+[package]
+name = "fprofile"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fakeit = "1.1.1"
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }
+
+[lib]
+crate-type = ["cdylib"]
