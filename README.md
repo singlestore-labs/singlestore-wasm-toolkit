@@ -1,5 +1,6 @@
-# open-source-template
-Template project for open source projects from SingleStore
+# SingleStore WASM Examples
+
+For more info on getting started using WASM UDFs with SingleStore try our [tutorial](https://github.com/singlestore-labs/wasm-udf-tutorial/)!
 
 ## Usage
 
@@ -11,6 +12,7 @@ Template project for open source projects from SingleStore
    ```bash
    export SINGLESTORE_LICENSE="singlestore license"
    ```
+2. Go to an example folder and checkout its README!
 
 ## Resources
 
