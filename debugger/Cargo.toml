@@ -6,3 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+regex = "1"
+anyhow = "1.0"
+wasmtime = "0.35.3"
+wasmtime-wasi = "0.35.3"
+wit-bindgen-wasmtime = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }

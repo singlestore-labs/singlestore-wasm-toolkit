@@ -8,3 +8,7 @@ wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git"
 
 [lib]
 crate-type = ["cdylib"]
+
+[profile.dev]
+strip = "none"
+lto = "off"

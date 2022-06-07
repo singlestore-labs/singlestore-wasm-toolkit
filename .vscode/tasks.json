@@ -4,10 +4,27 @@
     {
       "type": "cargo",
       "group": "build",
-      "label": "build:debugger",
+      "label": "build: debugger",
       "command": "build",
-      "args": ["--package", "debugger"],
       "problemMatcher": ["$rustc"]
+    },
+    {
+      "type": "cargo",
+      "group": "build",
+      "label": "build: rust wasm modules",
+      "command": "build",
+      "args": [
+        "--target=wasm32-unknown-unknown",
+        "--workspace",
+        "--exclude",
+        "debugger"
+      ],
+      "problemMatcher": ["$rustc"]
+    },
+    {
+      "group": "build",
+      "label": "build: all",
+      "dependsOn": ["build: debugger", "build: rust wasm modules"]
     }
   ]
 }
