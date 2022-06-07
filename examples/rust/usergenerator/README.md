@@ -60,6 +60,8 @@ SELECT * FROM users;
 The wit file is a "WebAssembly Interface Type" definition file. You can think of it as simply "what is in your wasm function and what should i expect back". Check out the links below for more information on the topic.
 - https://github.com/bytecodealliance/wit-bindgen/blob/main/WIT.md
 - https://github.com/bytecodealliance/wit-bindgen
+- https://github.com/WebAssembly/interface-types/blob/main/proposals/interface-types/Explainer.md
+- https://github.com/WebAssembly/interface-types
 
 ## Where can i find pre-compiled cargo packages that will help?
 - https://crates.io
