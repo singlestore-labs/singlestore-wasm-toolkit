@@ -9,13 +9,16 @@ Check out how to use the development container provided in this repository [Sing
 ### Setting up SingleStore Wasm Function
 1. Copy your wasm and wit file to your singlestore ciab
 ```
-docker cp fprofile.wasm singlestore-ciab:/fprofile.wasm
-docker cp fprofile.wit singlestore-ciab:/fprofile.wit
+docker cp usergenerator.wasm singlestore-ciab:/usergenerator.wasm
+docker cp usergenerator.wit singlestore-ciab:/usergenerator.wit
 ```
+
 1. Connect to your SingleStore CIAB cluster
 ```
+
 docker exec -it singlestore-ciab singlestore -p'YOUR_PASSWORD' --local-infile=ON
 ```
+
 1. Create the schema, function and table
 ```
 CREATE DATABASE IF NOT EXISTS TechCo;
