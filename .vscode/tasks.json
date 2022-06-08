@@ -14,7 +14,14 @@
       "group": "build",
       "label": "build: rust wasm modules",
       "command": "build",
-      "args": ["--target=wasm32-wasi", "--workspace", "--exclude", "debugger"],
+      "args": [
+        "--target=wasm32-wasi",
+        "--workspace",
+        "--exclude",
+        "debugger",
+        "--exclude",
+        "debugger-macro"
+      ],
       "problemMatcher": ["$rustc"]
     },
     {

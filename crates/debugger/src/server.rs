@@ -18,7 +18,7 @@ pub async fn listen_and_serve(port: u16, factory: handle::HandleFactory) -> Resu
     let mut app = tide::with_state(state);
     app.with(tide::log::LogMiddleware::new());
 
-    app.at("/foo").post(handle_json);
+    app.at("/:name").post(handle_json);
     app.listen(format!("0.0.0.0:{}", port)).await?;
 
     Ok(())
@@ -36,7 +36,7 @@ async fn handle_json(mut req: Request<State>) -> tide::Result {
     let mut handler = state.factory.make_handler()?;
 
     let payload: Payload = req.body_json().await?;
-    let path = req.url().path();
+    let name = req.param("name")?;
 
     let mut result = Vec::new();
     for row in payload.data {
@@ -47,7 +47,7 @@ async fn handle_json(mut req: Request<State>) -> tide::Result {
         let row_id = row[0].clone();
         let row_input = row[1..].to_vec();
 
-        let row_output_raw = handler.handle_json(path.into(), serde_json::to_vec(&row_input)?)?;
+        let row_output_raw = handler.handle_json(name.into(), serde_json::to_vec(&row_input)?)?;
         let row_output: Row = serde_json::from_slice(&row_output_raw)?;
 
         let row_final: Row = iter::once(row_id).chain(row_output.into_iter()).collect();
