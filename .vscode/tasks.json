@@ -6,6 +6,7 @@
       "group": "build",
       "label": "build: debugger",
       "command": "build",
+      "args": ["-p", "debugger"],
       "problemMatcher": ["$rustc"]
     },
     {
@@ -13,18 +14,48 @@
       "group": "build",
       "label": "build: rust wasm modules",
       "command": "build",
-      "args": [
-        "--target=wasm32-unknown-unknown",
-        "--workspace",
-        "--exclude",
-        "debugger"
-      ],
+      "args": ["--target=wasm32-wasi", "--workspace", "--exclude", "debugger"],
       "problemMatcher": ["$rustc"]
     },
     {
       "group": "build",
-      "label": "build: all",
-      "dependsOn": ["build: debugger", "build: rust wasm modules"]
+      "label": "setup: debugger",
+      "dependsOn": ["build: debugger", "build: rust wasm modules"],
+      "type": "process",
+      "command": "scripts/debug",
+      "args": ["${fileDirname}"],
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".",
+            "endsPattern": "."
+          }
+        }
+      ]
+    },
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
     }
   ]
 }

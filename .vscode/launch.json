@@ -2,13 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "preLaunchTask": "build: all",
       "type": "lldb",
-      "request": "launch",
+      "request": "attach",
       "name": "Debug",
       "program": "${workspaceFolder}/target/debug/debugger",
-      "args": ["${relativeFileDirname}"],
-      "cwd": "${workspaceFolder}"
+      "preLaunchTask": "setup: debugger",
+      "postDebugTask": "Terminate All Tasks"
     }
   ]
 }
