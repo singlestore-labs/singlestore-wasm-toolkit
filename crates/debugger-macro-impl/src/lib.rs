@@ -28,15 +28,6 @@ impl<'ast> Visit<'ast> for HandleVisitor {
         let args = quote! { (#(#typed_args,)*) };
         let args_splat = quote! { #(args.#indexes),* };
 
-        // XXX REMOVE?
-        // TODO: the idea here is to inspect the return_type
-        // and see if a json encoder is available.
-
-        let return_type = match &sig.output {
-            syn::ReturnType::Type(_, ty) => (**ty).clone(),
-            _ => panic!("expected return type"),
-        };
-
         let impl_trait = &self.impl_trait;
         let impl_type = &self.impl_type;
 
@@ -44,7 +35,7 @@ impl<'ast> Visit<'ast> for HandleVisitor {
             name: name.to_string(),
             src: quote! {
                 let args: #args = serde_json::from_slice(&json).unwrap();
-                let result: #return_type = <#impl_type as #impl_trait>::#name(#args_splat);
+                let result = <#impl_type as #impl_trait>::#name(#args_splat);
                 serde_json::to_vec(&vec![result]).unwrap()
             },
         });
