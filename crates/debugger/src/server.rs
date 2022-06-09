@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
-use serde_json;
-use std::iter;
+use serde_json::{self, Value};
 use tide::{Body, Request, Response};
 
 use crate::handle;
@@ -24,7 +23,7 @@ pub async fn listen_and_serve(port: u16, factory: handle::HandleFactory) -> Resu
     Ok(())
 }
 
-type Row = Vec<serde_json::Value>;
+type Row = Vec<Value>;
 
 #[derive(Serialize, Deserialize)]
 struct Payload {
@@ -47,11 +46,22 @@ async fn handle_json(mut req: Request<State>) -> tide::Result {
         let row_id = row[0].clone();
         let row_input = row[1..].to_vec();
 
-        let row_output_raw = handler.handle_json(name.into(), serde_json::to_vec(&row_input)?)?;
-        let row_output: Row = serde_json::from_slice(&row_output_raw)?;
+        let output_raw = handler.handle_json(name.into(), serde_json::to_vec(&row_input)?)?;
+        let output: Value = serde_json::from_slice(&output_raw)?;
 
-        let row_final: Row = iter::once(row_id).chain(row_output.into_iter()).collect();
-        result.push(row_final);
+        let encode_value = |v: &Value| match v {
+            Value::Array(_) | Value::Object(_) => Value::String(serde_json::to_string(v).unwrap()),
+            _ => v.clone(),
+        };
+
+        // if output is an array, then expand into multiple rows
+        if output.is_array() {
+            for row in output.as_array().unwrap() {
+                result.push(vec![row_id.clone(), encode_value(row)]);
+            }
+        } else {
+            result.push(vec![row_id.clone(), encode_value(&output)]);
+        }
     }
 
     Ok(Response::from(Body::from_json(&Payload { data: result })?))

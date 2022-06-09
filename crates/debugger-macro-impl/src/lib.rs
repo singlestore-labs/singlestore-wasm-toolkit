@@ -36,7 +36,7 @@ impl<'ast> Visit<'ast> for HandleVisitor {
             src: quote! {
                 let args: #args = serde_json::from_slice(&json).unwrap();
                 let result = <#impl_type as #impl_trait>::#name(#args_splat);
-                serde_json::to_vec(&vec![result]).unwrap()
+                serde_json::to_vec(&result).unwrap()
             },
         });
 
