@@ -1,0 +1,1 @@
+echo: function(phrase: string) -> string
