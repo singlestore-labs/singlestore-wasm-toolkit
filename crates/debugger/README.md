@@ -85,11 +85,11 @@ $ curl -s -XPOST localhost:3000/echo -d '{"data":[[1,"hello"]]}' | jq -r '.'
 
 For documentation on the input/output format please see the [external function][extfns] documentation.
 
-## Calling your remote function from SingleStore
+## Calling your remote function from SingleStoreDB
 
-Now that you have your Wasm code hosted behind an external functions compatible web service, you can easily call your code from SingleStore by defining an external udf or tvf. Full [documentation on doing this is here][extfns].
+Now that you have your Wasm code hosted behind an external functions compatible web service, you can easily call your code from SingleStoreDB by defining an external udf or tvf. Full [documentation on doing this is here][extfns].
 
-As an example, lets test the echo function we defined above. Note, I am running the VSCode dev container in this repository, and my dev container has ip address 172.17.0.3. I also have SingleStore running on my machine in another docker container. So, in order to call the external function from SingleStore I will need to tell SingleStore how to connect to 172.17.0.3:3000. I can do this like so:
+As an example, lets test the echo function we defined above. Note, I am running the VSCode dev container in this repository, and my dev container has ip address 172.17.0.3. I also have SingleStoreDB running on my machine in another docker container. So, in order to call the external function from SingleStoreDB I will need to tell SingleStoreDB how to connect to 172.17.0.3:3000. I can do this like so:
 
 ```sql
 MySQL [x]> create or replace external function echo (phrase text) returns text as remote service '172.17.0.3:3000/echo' format json;
@@ -108,7 +108,7 @@ MySQL [x]> select echo("hi");
 
 Now that you have your wasm code hosted in the remote debugger, you can do some pretty magical things with it. The first thing you can do is use breakpoints. To continue with the example from above, let's open `lib.rs` and put a breakpoint at the line containing `format!("{} {}", phrase, phrase)`.
 
-Once the breakpoint is set make sure the debugger is running (press `F5` if it's not) and trigger your function from an HTTP client or SingleStore. As soon as you do, the breakpoint you set should be hit.
+Once the breakpoint is set make sure the debugger is running (press `F5` if it's not) and trigger your function from an HTTP client or SingleStoreDB. As soon as you do, the breakpoint you set should be hit.
 
 Note - currently debugger support for Wasm is a bit thin. You will be able to step through your code and get nice back traces on failure, however you won't be able to inspect local variables yet. Hopefully that will be resolved in the future as debugger support increases for Wasm modules.
 
@@ -129,7 +129,7 @@ impl echo::Echo for Echo {
 
 When you run the debugger, you will see it's output in one of the VSCode terminals. Look for the phrase `tide::server Server listening on http://0.0.0.0:3000`. That's where your logs will go!
 
-Now send another request to the debugger from an HTTP client or SingleStore, and you should see something like the following output:
+Now send another request to the debugger from an HTTP client or SingleStoreDB, and you should see something like the following output:
 
 ```
 tide::log::middleware <-- Request received
