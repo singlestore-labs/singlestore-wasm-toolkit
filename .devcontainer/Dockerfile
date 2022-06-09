@@ -45,5 +45,11 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime \
 
 # configure rust
 RUN rustup target add wasm32-unknown-unknown wasm32-wasi
-RUN cargo install twiggy cargo-wasi cargo-expand mdbook
+RUN cargo install           \
+    twiggy                  \
+    cargo-wasi              \
+    cargo-expand            \
+    mdbook                  \
+    cargo-get               \
+    cargo-workspaces
 RUN cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli

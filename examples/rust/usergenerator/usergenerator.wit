@@ -7,4 +7,4 @@ record user {
   passwd: string
 }
 
-gen-users: function(pcount: u32) -> list<user>
+gen-users: func(count: u32) -> list<user>

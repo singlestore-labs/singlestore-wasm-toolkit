@@ -1,0 +1,1 @@
+echo: func(phrase: string) -> string

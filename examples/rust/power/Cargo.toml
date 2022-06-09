@@ -5,6 +5,7 @@ edition = "2018"
 
 [dependencies]
 wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }
+debugger-macro = { path = "../../../crates/debugger-macro" }
 
 [lib]
 crate-type = ["cdylib"]

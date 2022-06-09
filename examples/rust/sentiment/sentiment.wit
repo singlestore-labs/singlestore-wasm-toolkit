@@ -5,4 +5,4 @@ record polarity-scores {
     neutral: float64,
 }
 
-sentiment: function(input: string) -> polarity-scores
+sentiment: func(input: string) -> polarity-scores

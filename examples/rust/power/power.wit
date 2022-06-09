@@ -1,1 +1,1 @@
-power-of: function(base: s32, exp: s32) -> s32
+power-of: func(base: s32, exp: s32) -> s32
