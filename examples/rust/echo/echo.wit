@@ -1,1 +1,1 @@
-echo: function(phrase: string) -> string
+echo: func(phrase: string) -> string

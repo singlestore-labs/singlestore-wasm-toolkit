@@ -1,1 +1,1 @@
-handle-json: function(name: string, json: list<u8>) -> list<u8>
+handle-json: func(name: string, json: list<u8>) -> list<u8>
