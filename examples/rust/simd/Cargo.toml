@@ -1,0 +1,10 @@
+[package]
+name = "simd"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }
+
+[lib]
+crate-type = ["cdylib"]

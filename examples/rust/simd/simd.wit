@@ -1,0 +1,4 @@
+mul: func(a: u64, b: u64) -> u64
+dot: func(a: list<u64>, b: list<u64>) -> u64
+inner: func(a: list<u64>, b: list<u64>) -> list<u64>
+mmul: func(a: list<list<u64>>, b: list<list<u64>>) -> list<list<u64>>
