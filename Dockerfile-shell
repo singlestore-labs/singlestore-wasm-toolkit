@@ -1,0 +1,54 @@
+FROM debian:bullseye
+
+# Install our packages.
+#
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y git lldb gdb curl clang xz-utils sudo make && \
+    apt-get install -y --no-install-recommends mariadb-client && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install the WASI SDK.
+#
+ENV WASI_SDK_VERSION=14.0
+RUN cd /opt && \
+    curl -L https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-14/wasi-sdk-${WASI_SDK_VERSION}-linux.tar.gz | tar -xz && \
+    echo 'alias clang=/opt/wasi-sdk-14.0/bin/clang' >> /etc/bash.bashrc && \
+    echo 'alias clang++=/opt/wasi-sdk-14.0/bin/clang++' >> /etc/bash.bashrc
+
+# Install Wasmtime.
+#
+ENV WASMTIME_VERSION=0.33.0
+RUN curl -L https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz \ 
+    | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime
+
+# The useradd line in this next section needs a '-l' to workaround a hang 
+# caused by large UIDs (https://github.com/moby/moby/issues/5419).
+#
+ARG USER=docker
+ARG UID=1000
+ARG GID=1000
+RUN groupadd --gid $GID $USER && \
+    useradd -l --create-home --uid $UID --gid $GID --shell /bin/bash $USER && \
+    adduser $USER sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Now switch to the user account and install the rest.
+#
+USER ${UID}:${GID}
+WORKDIR /home/${USER}
+
+# Install the Rust toolchain.
+#
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Install Rust Wasm targets and useful components.
+#
+RUN $HOME/.cargo/bin/rustup target add wasm32-wasi wasm32-unknown-unknown
+RUN $HOME/.cargo/bin/rustup component add rustfmt rust-src clippy
+
+# Install some additional tools and wit-bindgen.
+#
+RUN $HOME/.cargo/bin/cargo install cargo-wasi cargo-expand && \
+    $HOME/.cargo/bin/cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli
+

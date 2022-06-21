@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -eu
+
+DOCKER=$(command -v docker)
+if [ -z "${DOCKER}" ] ; then
+    echo "Docker was not found in your PATH.  Aborting."
+    exit 1
+fi
+
+usage()
+{
+    cat<<EOF
+Usage: $0 [PROJDIR]
+
+If provided, PROJDIR specifies the root of the source directory for the 
+project you want to compile.  This will be mapped into the container under
+"/home/$USER/src".
+EOF
+    exit 1
+}
+
+while [ $# -gt 0 ] ; do
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        *)
+            break
+            ;;
+    esac
+    shift
+done
+[ $# -gt 1 ] && usage
+
+PROJ_DIR="${1:-}"
+if [ -n "${PROJ_DIR}" -a ! -d "${PROJ_DIR}" ] ; then
+    echo "ERROR: Specified project directory '${PROJ_DIR}' does not exist."
+    exit 1
+fi
+
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+
+pushd "${REPO_DIR}" > /dev/null
+"${DOCKER}" build \
+    --build-arg UID=$(id -u) \
+    --build-arg GID=$(id -g) \
+    --build-arg USER=$USER \
+    -f "Dockerfile-shell" \
+    -t "singlestore-wasm-toolkit-shell" \
+    .
+popd > /dev/null
+
+MAP_PROJ_DIR_OPT=
+SET_WORK_DIR_OPT=
+if [ -n "${PROJ_DIR}" ] ; then
+    MAP_PROJ_DIR_OPT="-v ${PROJ_DIR}:/home/$USER/src"
+    SET_WORK_DIR_OPT="-w /home/$USER/src"
+fi
+
+"${DOCKER}" run -it --rm \
+    -v "${REPO_DIR}":/opt/singlestore-wasm-toolkit \
+    ${MAP_PROJ_DIR_OPT} \
+    ${SET_WORK_DIR_OPT} \
+    singlestore-wasm-toolkit-shell \
+    /bin/bash
+
