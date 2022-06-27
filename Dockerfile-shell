@@ -4,7 +4,7 @@ FROM debian:bullseye
 #
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y git lldb gdb curl clang xz-utils sudo make && \
+    apt-get install -y git lldb gdb curl clang xz-utils sudo make vim && \
     apt-get install -y --no-install-recommends mariadb-client && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -25,15 +25,14 @@ RUN curl -L https://github.com/bytecodealliance/wasmtime/releases/download/v${WA
 # The useradd line in this next section needs a '-l' to workaround a hang 
 # caused by large UIDs (https://github.com/moby/moby/issues/5419).
 #
-ARG USER=docker
+ARG USER=stage
 ARG UID=1000
 ARG GID=1000
 RUN groupadd --gid $GID $USER && \
     useradd -l --create-home --uid $UID --gid $GID --shell /bin/bash $USER && \
-    adduser $USER sudo && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# Now switch to the user account and install the rest.
+# Now switch to the user staging account and install the rest.
 #
 USER ${UID}:${GID}
 WORKDIR /home/${USER}
@@ -51,4 +50,9 @@ RUN $HOME/.cargo/bin/rustup component add rustfmt rust-src clippy
 #
 RUN $HOME/.cargo/bin/cargo install cargo-wasi cargo-expand && \
     $HOME/.cargo/bin/cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli
+
+# Hacks and stuff.
+#
+RUN echo "set mouse=r" >> ~/.vimrc && \
+    echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]s2-dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' >> ~/.bashrc
 

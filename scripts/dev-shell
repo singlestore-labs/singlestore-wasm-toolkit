@@ -19,10 +19,14 @@ EOF
     exit 1
 }
 
+REBUILD=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
             usage
+            ;;
+        --rebuild)
+            REBUILD=1
             ;;
         *)
             break
@@ -33,35 +37,38 @@ done
 [ $# -gt 1 ] && usage
 
 PROJ_DIR="${1:-}"
-if [ -n "${PROJ_DIR}" -a ! -d "${PROJ_DIR}" ] ; then
-    echo "ERROR: Specified project directory '${PROJ_DIR}' does not exist."
-    exit 1
+if [ -n "${PROJ_DIR}" ] ; then
+    PROJ_DIR=$(readlink -f "${PROJ_DIR}")
+    if [ ! -d "${PROJ_DIR}" ] ; then
+        echo "ERROR: Specified project directory '${PROJ_DIR}' does not exist."
+        exit 1
+    fi
 fi
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 REPO_DIR="$(dirname "${SCRIPT_DIR}")"
 
-pushd "${REPO_DIR}" > /dev/null
-"${DOCKER}" build \
-    --build-arg UID=$(id -u) \
-    --build-arg GID=$(id -g) \
-    --build-arg USER=$USER \
-    -f "Dockerfile-shell" \
-    -t "singlestore-wasm-toolkit-shell" \
-    .
-popd > /dev/null
+if [ $REBUILD -eq 1 ] ; then
+    pushd "${REPO_DIR}" > /dev/null
+    "${DOCKER}" build \
+        -f "Dockerfile-shell" \
+        -t "singlestore-wasm-toolkit-shell" \
+        .
+    popd > /dev/null
+fi
 
 MAP_PROJ_DIR_OPT=
-SET_WORK_DIR_OPT=
+SET_WORK_DIR_OPT="-w /home/$USER"
 if [ -n "${PROJ_DIR}" ] ; then
     MAP_PROJ_DIR_OPT="-v ${PROJ_DIR}:/home/$USER/src"
     SET_WORK_DIR_OPT="-w /home/$USER/src"
 fi
 
 "${DOCKER}" run -it --rm \
+    -v "${REPO_DIR}"/scripts/dev-shell-init:/dev-shell-init \
     -v "${REPO_DIR}":/opt/singlestore-wasm-toolkit \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
     singlestore-wasm-toolkit-shell \
-    /bin/bash
+    /dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
 
