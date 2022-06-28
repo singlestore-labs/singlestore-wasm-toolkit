@@ -8,8 +8,7 @@ This repo provides two development containers.  Choose the one that best matches
 
 ### VS Code
 
-TODO
-VS Code instructions here
+This repo contains a VS Code dev container. If you are using VS Code with the `Remote - Containers` extension, you can use the `Remote-Containers: Open folder in container...` command to open the repository folder inside our development container, which will automatically set up the tools you need.
 
 ### Standalone
 
