@@ -52,7 +52,7 @@ if [ $REBUILD -eq 1 ] ; then
     pushd "${REPO_DIR}" > /dev/null
     "${DOCKER}" build \
         -f "Dockerfile-shell" \
-        -t "singlestore-wasm-toolkit-shell" \
+        -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
         .
     popd > /dev/null
 fi
@@ -69,6 +69,6 @@ fi
     -v "${REPO_DIR}":/opt/singlestore-wasm-toolkit \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
-    singlestore-wasm-toolkit-shell \
+    ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest \
     /dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
 
