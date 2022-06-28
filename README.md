@@ -2,6 +2,26 @@
 
 For more info on getting started using WASM UDFs with SingleStore try our [tutorial](https://github.com/singlestore-labs/wasm-udf-tutorial/)!
 
+## Development Containers
+
+This repo provides two development containers.  Choose the one that best matches your preferred workflow.
+
+### VS Code
+
+This repo contains a VS Code dev container. If you are using VS Code with the `Remote - Containers` extension, you can use the `Remote-Containers: Open folder in container...` command to open the repository folder inside our development container, which will automatically set up the tools you need.
+
+### Standalone
+
+Alternatively, you can use a standalone development container that does not integrate with VS Code.  To do this, run the following script:
+
+```
+scripts/dev-shell PATH
+```
+
+The path specifies the root of the source directory for the project you want to build.  This directory will be mapped into the container under `/home/$USER/src'.
+
+*Note*: The first time you run this script, it will build a Docker container with your UID/GID information.  This is necessary so that you can access your local filesystem within the container.  This build may take several minutes, depending on your bandwidth and CPU, and the resulting container will be about 3GB.
+
 ## Usage
 
 1. [Sign up](https://www.singlestore.com/try-free/) for a free SingleStore license. This allows you
