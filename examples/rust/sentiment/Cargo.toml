@@ -9,8 +9,6 @@ edition = "2021"
 wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }
 vader_sentiment = { git = "https://github.com/ckw017/vader-sentiment-rust" }
 lazy_static = "1.4.0"
-serde = { version = "1.0", features = ["derive"] }
-debugger-macro = { path = "../../../crates/debugger-macro" }
 
 [lib]
 crate-type = ["cdylib"]

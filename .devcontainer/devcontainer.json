@@ -3,14 +3,10 @@
 {
   "name": "Dev",
   "build": {
-    "dockerfile": "Dockerfile",
+    "dockerfile": "../docker/Dockerfile-vscode",
     "context": "..",
     "args": {
-      // Update 'VARIANT' to pick a Python version: 3, 3.10, 3.9, 3.8, 3.7, 3.6
-      // Append -bullseye or -buster to pin to an OS version.
-      // Use -bullseye variants on local on arm64/Apple Silicon.
       "VARIANT": "3.10-bullseye",
-      // Options
       "NODE_VERSION": "16"
     }
   },
@@ -43,15 +39,11 @@
     "rust-lang.rust-analyzer",
     "tamasfe.even-better-toml",
     "serayuzgur.crates"
-  ]
+  ],
 
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
-
-  // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "echo hello",
-
-  // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-  // "remoteUser": "vscode",
-  // "features": { }
+  // Uncomment the below lines to add custom mount points to the container.
+  //
+  //"mounts": [
+  //  "source=/home/foobar/mycode,target=/workspaces/mycode,type=bind"
+  //]
 }

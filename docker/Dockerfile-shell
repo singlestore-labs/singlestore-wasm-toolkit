@@ -1,0 +1,82 @@
+FROM debian:bullseye
+
+# Install our packages and setup the stage user.
+#
+# The useradd line in this next section needs a '-l' to workaround a hang 
+# caused by large UIDs (https://github.com/moby/moby/issues/5419).
+#
+ARG USER=stage
+ARG UID=1000
+ARG GID=1000
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update                                                             \
+    && apt-get install -y --no-install-recommends git lldb gdb curl clang      \
+    && apt-get install -y --no-install-recommends xz-utils sudo make vim pip   \
+    && apt-get install -y --no-install-recommends mariadb-client pkg-config    \
+    && apt-get install -y --no-install-recommends openssl libssl-dev           \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*                            \
+    && pip --no-cache-dir install wasmtime                                     \
+    \
+    && groupadd --gid $GID $USER                                               \
+    && useradd -l --create-home --uid $UID --gid $GID --shell /bin/bash $USER  \
+    && echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Install the WASI SDK and Wasmtime.
+#
+ENV WASI_SDK_VERSION=14.0
+ENV WASMTIME_VERSION=0.33.0
+RUN cd /opt                                                                    \
+    && curl -L                                                                 \
+        https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-14/wasi-sdk-${WASI_SDK_VERSION}-linux.tar.gz \
+        | tar -xz                                                              \
+    && echo 'alias clang=/opt/wasi-sdk-14.0/bin/clang' >> /etc/bash.bashrc     \
+    && echo 'alias clang++=/opt/wasi-sdk-14.0/bin/clang++' >> /etc/bash.bashrc \
+    && curl -L                                                                 \
+        https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz \ 
+        | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime
+
+# Now switch to the user staging account and install the rest.
+#
+USER ${UID}:${GID}
+WORKDIR /home/${USER}
+
+# Install the Rust toolchain, targets, useful components, tools, and wit-bindgen.
+# Make sure to clean up the cargo cache when we're done.
+#
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y    \
+    && $HOME/.cargo/bin/rustup target add wasm32-wasi wasm32-unknown-unknown   \
+    && $HOME/.cargo/bin/rustup component add rustfmt rust-src clippy           \
+    && $HOME/.cargo/bin/rustup component remove rust-docs                      \
+    && $HOME/.cargo/bin/cargo install cargo-wasi cargo-expand cargo-cache      \
+    \
+    && $HOME/.cargo/bin/cargo install                                          \
+        --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli  \
+    \
+    && $HOME/.cargo/bin/cargo cache -r all
+
+# Clone and build SingleStore tools -- `pushwasm` and `writ`.
+# Make sure to clean up the cargo cache when we're done.
+#
+RUN git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git       \
+    && mkdir -p bin                                                            \
+    && cd pushwasm                                                             \
+    && $HOME/.cargo/bin/cargo build --release                                  \
+    && cp target/release/pushwasm ../bin                                       \
+    && cd ..                                                                   \
+    && rm -rf pushwasm                                                         \
+    \
+    && git clone --depth 1 https://github.com/singlestore-labs/writ.git        \
+    && mkdir -p bin                                                            \
+    && cd bin                                                                  \
+    && ln -s ../writ/bin/writ writ                                             \
+    && cd ..                                                                   \
+    \
+    && $HOME/.cargo/bin/cargo cache -r all
+
+# Hacks and stuff.
+#
+RUN echo "set mouse=r" >> ~/.vimrc                                             \
+    && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]s2-dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
+        >> ~/.bashrc                                                           \
+    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+

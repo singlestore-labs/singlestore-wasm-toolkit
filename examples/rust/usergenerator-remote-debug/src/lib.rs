@@ -5,6 +5,21 @@ wit_bindgen_rust::export!("usergenerator.wit");
 // later to generate multiple user profiles
 use crate::usergenerator::User;
 
+// implement json serialization on user for the remote debugger
+use serde::{ser::SerializeMap, Serialize, Serializer};
+impl Serialize for User {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut map = serializer.serialize_map(None)?;
+        map.serialize_entry("uid", &self.uid)?;
+        map.serialize_entry("created", &self.created)?;
+        map.serialize_entry("first-name", &self.first_name)?;
+        map.serialize_entry("last-name", &self.last_name)?;
+        map.serialize_entry("email", &self.email)?;
+        map.serialize_entry("passwd", &self.passwd)?;
+        map.end()
+    }
+}
+
 // Pull in fakeit modules for name, contact, password, unique and datetime
 use fakeit::{contact, datetime, name, password, unique};
 
@@ -12,6 +27,7 @@ use fakeit::{contact, datetime, name, password, unique};
 struct Usergenerator;
 
 // implement the gen_users method of our wit interface (usergenerator.wit)
+#[debugger_macro::export_debug_handler]
 impl usergenerator::Usergenerator for Usergenerator {
     // Our first function of our package! gen_users takes in a integer (a u32 in
     // this case) and will output a vector with the User type we pulled from the
