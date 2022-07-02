@@ -1,8 +1,8 @@
 # SingleStore Wasm Toolkit And Examples
 
-This repository is provides utilities intended to help your streamline development of Wasm UDFs in SingleStoreDB.  It consists of development containers and a collection of example Wasm programs that can imported to SingleStoreDB as UDFs.
+This repository provides utilities intended to help you streamline development of Wasm UDFs for SingleStoreDB.  It consists of development containers, documentation, and a collection of example Wasm programs.
 
-To use the tools in this repo, you will need to have Docker installed on your system.  Some of the tools can be installed locally as well (see below).
+To use the tools in this repo, you will need to have Docker installed on your system.  Most of these tools can be installed locally as well.
 
 # Tools
 
