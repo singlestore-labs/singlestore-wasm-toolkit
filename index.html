@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - SingleStore Wasm Toolkit</title>
+        <title>Tutorial: Developing Wasm UDFs in C/C++ - SingleStore Wasm Toolkit</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../Tutorial-Developing-Wasm-UDF-CPP.html"><strong aria-hidden="true">1.</strong> Tutorial: Developing Wasm UDFs in C/C++</a></li><li class="chapter-item expanded "><a href="../Tutorial-Developing-Wasm-UDF-Rust.html"><strong aria-hidden="true">2.</strong> Tutorial: Developing Wasm UDFs in Rust</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,18 +134,288 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+                        <h1 id="singlestore-wasm-udf-tutorial"><a class="header" href="#singlestore-wasm-udf-tutorial">SingleStore Wasm UDF Tutorial</a></h1>
+<!-- The original tutorial -->
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>This tutorial will teach you how to write some simple WebAssembly (Wasm) UDFs in in C/C++, load them into the database, and evaluate them in queries.</p>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<p>For each example in this tutorial, it will be useful to create yourself a separate work directory in which to put your code and compiled artifacts. This will help keep your files for each example organized.</p>
+<p>In addition to a SQL client and SingleStore database, you’ll need a few other things to get your environment set up properly. For this, you have a couple of options.</p>
+<h3 id="vs-code-devcontainer-setup"><a class="header" href="#vs-code-devcontainer-setup">VS Code DevContainer Setup</a></h3>
+<p>The easiest way to get started is to download the <a href="https://github.com/singlestore-labs/singlestore-wasm-toolkit">SingleStore WASM Toolkit</a> repository.
+This repo provides a VS Code DevContainer with all of the tools you'll need to work with WASM UDFs and complete this tutorial. It also includes fully-written versions of the tutorial code.</p>
+<p>You can install VS Code <a href="https://code.visualstudio.com/download">here</a> then follow these steps:</p>
+<ol>
+<li>
+<p>Run git clone git@github.com:singlestore-labs/singlestore-wasm-toolkit.git</p>
+</li>
+<li>
+<p>Install the Remote - Containers VS Code Extension if you do not already have it.</p>
+</li>
+<li>
+<p>In VS Code, type F1 and search for “Open Folder in Container”.</p>
+</li>
+<li>
+<p>Navigate to the directory where you cloned the project in step 1, and click Open. The container will build, which may take a few minutes.</p>
+</li>
+</ol>
+<p>When the container build completes, you are ready to go. Execute your commands inside the VS Code terminal window so that the required command-line tools are available.</p>
+<blockquote>
+<p><strong>Note</strong>
+Make sure to run your SQL client on your local system, outside of the container.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note</strong>
+Create your folders inside the repository structure so they are available within the container.</p>
+</blockquote>
+<!-- These use a special GitHub-flavored .md feature -->
+<h3 id="manual-setup"><a class="header" href="#manual-setup">Manual Setup</a></h3>
+<p>If you’d prefer to set up your development environment manually, you’ll need to do the following:</p>
+<ul>
+<li>
+<p>Download the <a href="https://github.com/WebAssembly/wasi-sdk/releases">WASI SDK</a> and decompress it somewhere. For the purposes of this tutorial, it might be convenient to create a shell alias to the version of clang in this tarball. For example, if you uncompressed the tarball under /opt, then you can run the following:</p>
+<ul>
+<li>
+<p><code>alias clang=/opt/wasi-sdk-14.0/bin/clang</code></p>
+</li>
+<li>
+<p><code>alias clang++=/opt/wasi-sdk-14.0/bin/clang++</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Download and install the Rust toolchain:</p>
+<ul>
+<li>
+<p><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</code></p>
+</li>
+<li>
+<p><code>source $HOME/.cargo/env</code> (or restart your shell)</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Download and install the wit-bindgen program:</p>
+<ul>
+<li><code>cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="developing-a-simple-example"><a class="header" href="#developing-a-simple-example">Developing a Simple Example</a></h2>
+<h3 id="creating-the-wit-specification"><a class="header" href="#creating-the-wit-specification">Creating the WIT Specification</a></h3>
+<p>Before we do any coding, let’s first define our interface. WIT is an Interface Definition Language (IDL) used for describing WASM modules in <code>*.wit</code> files. We'll create a .wit specification for our new function. In a new work directory, open a new file called power.wit in your text editor.</p>
+<p>Let’s say we want to develop a program that simply computes x^y (that is, x to the power of y). The interface for this is simple; here is the WIT IDL for it:</p>
+<pre><code class="language-wit">power-of: function(base: s32, exp: s32) -&gt; s32
+</code></pre>
+<p>This function will take two signed 32-bit integers as arguments (the base and the exponent) and return a single signed 32-bit integer.</p>
+<p>Copy and paste the above code into power.wit and save it. Now we’re ready to write some code.</p>
+<h3 id="using-bindgen"><a class="header" href="#using-bindgen">Using Bindgen</a></h3>
+<p>We’ll start by generating the C language bindings for our functions. We can do this using the wit-bindgen program (demo). In your work directory, run the following command:</p>
+<pre><code class="language-bash">wit-bindgen c --export power.wit
+</code></pre>
+<p>This will generate two files in your work directory:  <code>power.c</code> and <code>power.h</code>.</p>
+<p>If you look at the contents of the <code>power.h</code> file, you’ll see a single prototype:</p>
+<pre><code class="language-cpp">int32_t power_power_of(int32_t base, int32_t exp);
+</code></pre>
+<p>The name looks odd because wit-bindgen concatenates the name of the WIT file with the name of the function. That’s ok; as we’ll see in a moment, the name that is actually exported will make more sense.</p>
+<p>Aside from the function name, the signature is as expected:  take two 32-bit integers, and return one.</p>
+<p>Next, open the <code>power.c</code> file in your editor. We’ll ignore the <code>canonical_abi_realloc</code> and <code>canonical_abi_free</code> functions for now and skip to the bottom where we will find a function called <code>__wasm_export_power_power_of</code>. This is wrapper code that handles passing values through the Wasm Canonical ABI (a trivial operation in this case). Looking at the body of this function, we can see that it calls the <code>power_power</code> function that was declared in the header file. We’ll need to provide the implementation for this.</p>
+<p>Before we continue, though, notice the following line just above the this function’s definition:</p>
+<pre><code class="language-cpp">__attribute__((export_name(&quot;power-of&quot;)))
+</code></pre>
+<p>This line forces the name of this wrapper function be exported from the compiled module as power-of (the hyphen is the preferred word separator for function names in Wasm). Fortunately, consumers only need to invoke it by this name.</p>
+<h3 id="implementing-and-running"><a class="header" href="#implementing-and-running">Implementing and Running</a></h3>
+<p>Now, let’s implement the logic we need. To the bottom of the <code>power.c</code> file, add the following code (we can start by copying in the prototype from the <code>power.h</code> file):</p>
+<pre><code class="language-cpp">int32_t power_power_of(int32_t base, int32_t exp)
+{
+    int32_t res = 1;
+    for (int32_t i = 0; i &lt; exp; ++i)
+    {
+        res *= base;
+    }
+    return res;
+}
+</code></pre>
+<p>Now let’s save the file and get back to our command line.</p>
+<p>We can compile this program into a Wasm module by using the following command.</p>
+<pre><code class="language-bash">clang                            \
+    --target=wasm32-unknown-wasi \
+    -mexec-model=reactor         \
+    -s                           \
+    -I.                          \
+    -o power.wasm                \
+    power.c
+</code></pre>
+<p>You should now see a <code>power.wasm</code> file in your directory.</p>
+<p>All that’s left to do is load it into the database. Fire up your favorite SingleStore instance and connect a SQL client to it. You’ll need to make sure the “local infile” feature is enabled; to do this in the mysql CLI, pass the <code>--local-infile=ON</code> argument.</p>
+<p>In your SQL client, issue the following commands. For this tutorial, we’ll just create a scratch database called <code>wasm_tutorial</code>.
+You may need to adjust the paths to your files if your SQL client is not in the same directory as them or does not support relative paths.</p>
+<pre><code class="language-sql">CREATE DATABASE wasm_tutorial;
+USE wasm_tutorial;
+CREATE FUNCTION `power-of` AS WASM FROM INFILE 'power.wasm' WITH WIT FROM INFILE 'power.wit';
+</code></pre>
+<p>If the UDF has been created successfully, you will see something like:</p>
+<pre><code>Query OK, 1 row affected (0.029 sec)
+</code></pre>
+<p>Now our UDF is ready to run!  To do this, just run the following command:</p>
+<pre><code class="language-sql">SELECT `power-of`(2, 8);
+</code></pre>
+<p>... which should return a single-column row with the value 256, of course.</p>
+<p>Before moving on to the next example, drop your <code>wasm_tutorial</code> database.</p>
+<pre><code class="language-sql">DROP DATABASE wasm_tutorial
+</code></pre>
+<h2 id="a-more-complex-example"><a class="header" href="#a-more-complex-example">A More Complex Example</a></h2>
+<h3 id="creating-the-wit-specification-1"><a class="header" href="#creating-the-wit-specification-1">Creating the WIT Specification</a></h3>
+<p>In this example, we’ll work with strings and nested types. Let’s create a function that takes a string, splits it at every occurrence of a delimiting string, and then returns each sub-string along with its starting indices. The output will be sent back as a list of records (aka structures).</p>
+<p>To start, let’s create a new work directory, and inside of it we’ll make a new file called <code>split.wit</code>. The WIT IDL we need is below, so we can go ahead and paste that in and save it.</p>
+<pre><code class="language-wit">record subphrase {
+  str: string,
+  idx: s32
+}
+split-str: function(phrase: string, delim: string) -&gt; list&lt;subphrase&gt;
+</code></pre>
+<h3 id="implementing-the-specification"><a class="header" href="#implementing-the-specification">Implementing the Specification</a></h3>
+<p>With this example, we’ll use C++ so that we can leverage the STL’s higher-level data structures and keep our implementation focused on the big picture as much as possible.</p>
+<p>As before, we’ll start by generating the C language bindings. Run the <em>wit-bindgen</em> command:</p>
+<pre><code class="language-bash">wit-bindgen c --export split.wit
+</code></pre>
+<p>There should now be a <code>split.c</code> and <code>split.h</code> file in your work directory. Since we’ll be using C++, rename <code>split.c</code> to <code>split.cpp</code>:</p>
+<pre><code class="language-bash">mv split.c split.cpp
+</code></pre>
+<p>Now let’s take a look at <code>split.h</code>. As we might expect, there are a few more definitions in here than before. The wit-bindgen program has generated a struct definition for us to use when passing our strings, as well as ones for the subphrase record and its enclosing list. At the bottom is prototype for the function we are going to implement:</p>
+<pre><code class="language-cpp">void split_split_str(split_string_t *phrase, split_string_t *delim, split_list_subphrase_t *ret0);
+</code></pre>
+<p>This, too, looks a bit different than before. For one thing, the function doesn’t return a value. Since this function will be returning a list, for which we’ll need to dynamically allocate memory, the result is passed as an argument pointer instead.</p>
+<p>Now let’s open up the <code>split.cpp</code> file. Once again, we are going to add our implementation here. At the bottom of the file, we can find the generated wrapper function, called <code>__wasm_export_split_split_str</code>. This wrapper delegates to our function, and we also can see that it  is doing work required for lifting and lowering the data types on either side of the function call.</p>
+<p>We’ll now add our code. Let’s first update the top of <code>split.cpp</code> as follows:</p>
+<pre><code class="language-cpp">#include &lt;memory&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;split.h&gt;
+</code></pre>
+<p>Since C++ has a more strict compiler than C, we’ll also need to make a small change to the generated code in this file at line 38. Go ahead and change the following line:</p>
+<pre><code class="language-cpp">ret-&gt;ptr = canonical_abi_realloc(NULL, 0, 1, ret-&gt;len);
+</code></pre>
+<p>... to this:</p>
+<pre><code>ret-&gt;ptr = reinterpret_cast&lt;char *&gt;(canonical_abi_realloc(NULL, 0, 1, ret-&gt;len));
+</code></pre>
+<p>And finally, to the bottom of the file, we’ll add this chunk of code:</p>
+<pre><code class="language-cpp">void split_split_str(split_string_t *phrase, split_string_t *delim, split_list_subphrase_t *ret0)
+{
+    // Clear the result.
+    memset(ret0, 0, sizeof(split_list_subphrase_t));
+
+    // Parse the tokens.
+    std::string phr(phrase-&gt;ptr, phrase-&gt;len);
+    std::string dlm(delim-&gt;ptr, delim-&gt;len);
+    std::string tok;
+    std::vector&lt;std::pair&lt;std::string, size_t&gt;&gt; subs;
+    size_t start = 0, end = 0;
+    if (delim-&gt;len)
+    {
+        while ((end = phr.find(dlm, start)) != std::string::npos)
+        {
+            tok = phr.substr(start, end - start);
+            subs.push_back(std::pair&lt;std::string, size_t&gt;(tok, start));
+            start = end + dlm.length();
+        }
+    }
+    subs.push_back(std::pair&lt;std::string, size_t&gt;(phr.substr(start), start));
+
+    // Populate the result.
+    bool err = false;
+    auto res = (split_subphrase_t *) malloc(phr.size() * sizeof(split_subphrase_t));
+    for (int i = 0; !err &amp;&amp; i &lt; subs.size(); ++i)
+    {
+        auto&amp; sub = subs[i].first;
+        res[i].idx = static_cast&lt;int32_t&gt;(subs[i].second);
+        res[i].str.len = sub.length();
+        res[i].str.ptr = strdup(sub.c_str());
+        if (!res[i].str.ptr)
+            err = true;
+    }
+
+    // If success, assign the result. Else, clean up and return an empty list.
+    if (!err)
+    {
+        // Success; assign the result.
+        ret0-&gt;ptr = res;
+        ret0-&gt;len = subs.size();
+    }
+    else
+    {
+        if (res)
+        {
+            for (int i = 0; i &lt; subs.size(); ++i)
+                if (res[i].str.ptr)
+                    free(res[i].str.ptr);
+            free(res);
+        }
+    }
+
+    // Per the Canonical ABI contract, free the input pointers.
+    free(phrase-&gt;ptr);
+    free(delim-&gt;ptr);
+}
+</code></pre>
+<p>Obviously, there is much more work going on here than in our first example; a fair amount of it deals with memory management.</p>
+<p>The Wasm Canonical ABI requires that any dynamic memory passed from the host to the guest or vice-versa transfers the ownership to the receiver. This explains the last two lines of our <code>split_split_str</code> function, where we free the pointers to the strings we have been passed as arguments. This memory will have been allocated by the host using our guest module’s exported <code>canonical_abi_realloc</code> function, which takes it from the Wasm instance’s linear memory at runtime. Conversely, you may also notice that we pass dynamically allocated memory out of the function; the host is expected to free it by calling our module's <code>canonical_abi_free</code> routine, which will return it to the linear memory.</p>
+<p>Now let’s save the file and build the module. We will use a similar approach as we did in the simple example above, but with a couple of tweaks. First, we’ll use clang++, since this is C++ code. And second, we’ll need to include the option <code>-fno-exceptions</code> because Wasm doesn’t yet support exception handling (there is a proposal, however).</p>
+<pre><code class="language-bash">clang++                          \
+    -fno-exceptions              \
+    --target=wasm32-unknown-wasi \
+    -mexec-model=reactor         \
+    -s                           \
+    -I.                          \
+    -o split.wasm                \
+    split.cpp
+</code></pre>
+<p>As expected, there should now be a <code>split.wasm</code> file in your work directory.</p>
+<h3 id="running-the-new-udf"><a class="header" href="#running-the-new-udf">Running the New UDF</a></h3>
+<p>Hooray!  It’s time to load it into the database and try it out. Another difference between the simple example and this one is that, while we previously returned a scalar value from our UDF, we are now returning a list of records. This aspect makes the function suitable for use as a TVF. And, we only need to make a small change to the SQL syntax to do it (by adding the <code>RETURNS TABLE</code> clause).</p>
+<p>Start your database client up, again making sure you enable the “local infile” feature (<code>--local-infile=ON</code> for mysql), and issue the following statements. 
+You may need to adjust the paths to your files if your SQL client is not in the same directory as them or does not support relative paths.</p>
+<pre><code class="language-sql">CREATE DATABASE wasm_tutorial;
+USE wasm_tutorial;
+CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE 'split.wasm' WITH WIT FROM INFILE 'split.wit';
+</code></pre>
+<p>Now we can run our Wasm function as a TVF like this:</p>
+<pre><code class="language-sql">SELECT * FROM `split-str`('wasm_rocks_the_house', '_');
+</code></pre>
+<p>... which will produce the following output:</p>
+<pre><code>+-------+-----+
+| str   | idx |
++-------+-----+
+| wasm  |   0 |
+| rocks |   5 |
+| the   |  11 |
+| house |  15 |
++-------+-----+
+94 rows in set (0.001 sec)
+</code></pre>
+<p>Awesome!</p>
+<h2 id="wrap-up"><a class="header" href="#wrap-up">Wrap-Up</a></h2>
+<p>Well, this concludes our little tutorial. Using both the C/C++ we were able to turn simple and not-quite-so-simple use cases into WebAssembly programs. We also learned how to load them into the SingleStore database in form of UDFs and TVFs, and then run them.</p>
+<p>Hopefully, this helps you kickstart your own Wasm UDFs. Thanks for tuning in!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="next" href="../Tutorial-Developing-Wasm-UDF-Rust.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="next" href="../Tutorial-Developing-Wasm-UDF-Rust.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
