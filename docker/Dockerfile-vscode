@@ -1,0 +1,90 @@
+# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.234.0/containers/python-3/.devcontainer/base.Dockerfile
+
+# [Choice] Python version (use -bullseye variants on local arm64/Apple Silicon): 3, 3.10, 3.9, 3.8, 3.7, 3.6, 3-bullseye, 3.10-bullseye, 3.9-bullseye, 3.8-bullseye, 3.7-bullseye, 3.6-bullseye, 3-buster, 3.10-buster, 3.9-buster, 3.8-buster, 3.7-buster, 3.6-buster
+ARG VARIANT="3.10-bullseye"
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
+
+# Configuration
+#
+ARG NODE_VERSION="16"
+
+ENV RUST_INSTALL_SCRIPT_VERSION=v0.238.0
+ENV CARGO_HOME=/usr/local/cargo \
+    RUSTUP_HOME=/usr/local/rustup
+ENV WASMTIME_VERSION=0.37.0
+ENV WASMTIME_URL=https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz
+ENV WASI_SDK_VERSION=16
+ENV WASI_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz
+ENV WASI_SDK_HOME=/opt/wasi-sdk/
+ENV PATH=${WASI_SDK_HOME}/bin:${CARGO_HOME}/bin:${PATH}
+
+# Install additional OS packages, Node, Wasmtime, and WASI SDK.
+#
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive                    \
+    && apt-get -y install --no-install-recommends mariadb-client               \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*                         \
+    && bash -c                                                                 \
+        "$(curl -fsSL "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${RUST_INSTALL_SCRIPT_VERSION}/script-library/rust-debian.sh")" \
+        -- "${CARGO_HOME}" "${RUSTUP_HOME}"                                    \
+    \
+    && if [ "${NODE_VERSION}" != "none" ]; then                                \
+        su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi \
+    \
+    && curl -L ${WASMTIME_URL}                                                 \
+        | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime \
+    && mkdir -p ${WASI_SDK_HOME}                                               \
+    && curl -L ${WASI_SDK_URL}                                                 \
+        | tar -xz -C ${WASI_SDK_HOME} --strip-components 1                     \
+    \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# [Optional] Uncomment this line to install global node packages.
+# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+
+# User-specific code after this point.
+#
+USER vscode
+WORKDIR /home/vscode
+
+# Setup python deps and configure rust.
+#
+RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime      \
+    && rm -rf /tmp/pip-tmp                                                     \
+    \
+    && rustup target add wasm32-unknown-unknown wasm32-wasi                    \
+    && cargo install                                                           \
+        twiggy                                                                 \
+        cargo-wasi                                                             \
+        cargo-expand                                                           \
+        mdbook                                                                 \
+        cargo-get                                                              \
+        cargo-workspaces                                                       \
+        cargo-cache                                                            \
+    && cargo install                                                           \
+        --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli  \
+    && cargo cache -r all
+
+# Clone and build SingleStore tools -- `pushwasm` and `writ`.
+#
+RUN git clone https://github.com/singlestore-labs/pushwasm.git                 \
+    && mkdir -p bin                                                            \
+    && cd pushwasm                                                             \
+    && cargo build --release                                                   \
+    && cp target/release/pushwasm ../bin                                       \
+    && cd ..                                                                   \
+    && rm -rf pushwasm                                                         \
+    \
+    && git clone https://github.com/singlestore-labs/writ.git                  \
+    && mkdir -p bin                                                            \
+    && cd bin                                                                  \
+    && ln -s ../writ/bin/writ writ                                             \
+    && cd ..                                                                   \
+    && cargo cache -r all
+
+# Hacks and stuff.
+#
+RUN echo "set mouse=r" >> ~/.vimrc                                             \
+    && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]s2-dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
+        >> ~/.bashrc                                                           \
+    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+

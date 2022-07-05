@@ -5,13 +5,7 @@ A simple sentiment analysis function using [VADER Sentiment Analysis](https://cr
 ## Build
 
 ```sh
-cargo build --target wasm32-unknown-unknown
-```
-
-## Create Function
-
-```sql
-CREATE FUNCTION sentiment AS WASM FROM INFILE 'target/wasm32-unknown-unknown/debug/sentiment_rust.wasm' WITH WIT FROM INFILE 'sentiment.wit'
+cargo wasi build --lib
 ```
 
 ## Example Queries

@@ -45,7 +45,7 @@ If you’d prefer to set up your development environment manually, you’ll need
 
   - `source $HOME/.cargo/env` (or restart your shell)
 
-  - `rustup target add wasm32-unknown-unknown wasm32-wasi`
+  - `rustup target add wasm32-wasi`
 
 - Download and install the wit-bindgen program:
 
@@ -115,15 +115,15 @@ The WIT IDL is heavily inspired by the Rust language syntax, so it was pretty ea
 Now we can compile the program into a wasm module using this command:
 
 ```bash
-cargo build --target wasm32-unknown-unknown
+cargo wasi build --lib
 ```
 
-We can now load the module into the database using the same procedure we discussed above. The Wasm module is written to `target/wasm32-unknown-unknown/debug/power.wasm`, so we need to make sure the Wasm *infile* path is pointing there instead of the work tree’s root.
+We can now load the module into the database using the same procedure we discussed above. The Wasm module is written to `target/wasm32-wasi/debug/power.wasm`, so we need to make sure the Wasm *infile* path is pointing there instead of the work tree’s root.
 
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM INFILE '/workdir/target/wasm32-unknown-unknown/debug/power.wasm' WITH WIT FROM INFILE '/workdir/power.wit';
+CREATE FUNCTION `power-of` AS WASM FROM INFILE '/workdir/target/wasm32-wasi/debug/power.wasm' WITH WIT FROM INFILE '/workdir/power.wit';
 ```
 
 And, once again, running the following SQL gives us back the expected result of 256.
@@ -207,7 +207,7 @@ Fortunately, with Rust, we have some nice language features that help make our c
 Let’s compile the Wasm module now:
 
 ```bash
-cargo build --target wasm32-unknown-unknown
+cargo wasi build --lib
 ```
 
 And, we’ll finish up by loading the module into the database as TVF, just as we did with the simple example. Note again that our Wasm module is down in the target/debug directory.
@@ -216,7 +216,7 @@ And, we’ll finish up by loading the module into the database as TVF, just as w
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE '/workdir/target/wasm32-unknown-unknown/debug/split.wasm' WITH WIT FROM INFILE '/workdir/split.wit';
+CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE '/workdir/target/wasm32-wasi/debug/split.wasm' WITH WIT FROM INFILE '/workdir/split.wit';
 ```
 
 Then:

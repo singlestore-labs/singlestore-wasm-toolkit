@@ -1,0 +1,10 @@
+record user {
+  uid: string,
+  created: string,
+  first-name: string,
+  last-name: string,
+  email: string,
+  passwd: string
+}
+
+gen-users: func(count: u32) -> list<user>

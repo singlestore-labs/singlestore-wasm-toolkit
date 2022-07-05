@@ -51,7 +51,7 @@ REPO_DIR="$(dirname "${SCRIPT_DIR}")"
 if [ $REBUILD -eq 1 ] ; then
     pushd "${REPO_DIR}" > /dev/null
     "${DOCKER}" build \
-        -f "Dockerfile-shell" \
+        -f "docker/Dockerfile-shell" \
         -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
         .
     popd > /dev/null

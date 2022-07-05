@@ -3,7 +3,6 @@ struct Dates;
 
 use chrono::{NaiveDate, TimeZone, Datelike, Duration, Utc, Weekday};
 
-#[debugger_macro::export_debug_handler]
 impl dates::Dates for Dates {
     fn next_saturday(in_date: String) -> String {
         next_saturday(in_date)
