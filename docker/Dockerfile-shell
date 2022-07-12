@@ -23,17 +23,9 @@ RUN apt-get update                                                             \
 
 # Install the WASI SDK and Wasmtime.
 #
-ENV WASI_SDK_VERSION=14.0
-ENV WASMTIME_VERSION=0.33.0
-RUN cd /opt                                                                    \
-    && curl -L                                                                 \
-        https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-14/wasi-sdk-${WASI_SDK_VERSION}-linux.tar.gz \
-        | tar -xz                                                              \
-    && echo 'alias clang=/opt/wasi-sdk-14.0/bin/clang' >> /etc/bash.bashrc     \
-    && echo 'alias clang++=/opt/wasi-sdk-14.0/bin/clang++' >> /etc/bash.bashrc \
-    && curl -L                                                                 \
-        https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz \ 
-        | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime
+COPY docker/*.sh /tmp/library-scripts/
+RUN bash /tmp/library-scripts/install-wasi-sdk.sh
+RUN bash /tmp/library-scripts/install-wasmtime.sh
 
 # Now switch to the user staging account and install the rest.
 #

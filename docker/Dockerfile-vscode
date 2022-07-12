@@ -11,14 +11,9 @@ ARG NODE_VERSION="16"
 ENV RUST_INSTALL_SCRIPT_VERSION=v0.238.0
 ENV CARGO_HOME=/usr/local/cargo \
     RUSTUP_HOME=/usr/local/rustup
-ENV WASMTIME_VERSION=0.37.0
-ENV WASMTIME_URL=https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-x86_64-linux.tar.xz
-ENV WASI_SDK_VERSION=16
-ENV WASI_SDK_URL=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz
-ENV WASI_SDK_HOME=/opt/wasi-sdk/
 ENV PATH=${WASI_SDK_HOME}/bin:${CARGO_HOME}/bin:${PATH}
 
-# Install additional OS packages, Node, Wasmtime, and WASI SDK.
+# Install additional OS packages and Node
 #
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive                    \
     && apt-get -y install --no-install-recommends mariadb-client               \
@@ -30,13 +25,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive                    \
     && if [ "${NODE_VERSION}" != "none" ]; then                                \
         su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi \
     \
-    && curl -L ${WASMTIME_URL}                                                 \
-        | tar -xJ --wildcards --no-anchored --strip-components 1 -C /usr/bin wasmtime \
-    && mkdir -p ${WASI_SDK_HOME}                                               \
-    && curl -L ${WASI_SDK_URL}                                                 \
-        | tar -xz -C ${WASI_SDK_HOME} --strip-components 1                     \
-    \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install the WASI SDK and Wasmtime.
+#
+COPY docker/*.sh /tmp/library-scripts/
+RUN bash /tmp/library-scripts/install-wasi-sdk.sh
+RUN bash /tmp/library-scripts/install-wasmtime.sh
 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
@@ -80,11 +75,3 @@ RUN git clone https://github.com/singlestore-labs/pushwasm.git                 \
     && ln -s ../writ/bin/writ writ                                             \
     && cd ..                                                                   \
     && cargo cache -r all
-
-# Hacks and stuff.
-#
-RUN echo "set mouse=r" >> ~/.vimrc                                             \
-    && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]s2-dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
-        >> ~/.bashrc                                                           \
-    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-
