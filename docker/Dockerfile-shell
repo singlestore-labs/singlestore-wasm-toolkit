@@ -6,8 +6,8 @@ FROM debian:bullseye
 # caused by large UIDs (https://github.com/moby/moby/issues/5419).
 #
 ARG USER=stage
-ARG UID=1000
-ARG GID=1000
+ARG UID=499
+ARG GID=499
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update                                                             \
     && apt-get install -y --no-install-recommends git lldb gdb curl clang      \
