@@ -23,6 +23,6 @@ updaterc() {
 # Add WASI-SDK bin to beginning of PATH in bashrc/zshrc files (unless disabled)
 # so that WASI  clang and clang++ take precedence over the system ones.
 updaterc "$(cat << EOF
-if [[ "\${PATH}" != *"\${WASI_SDK_HOME}/bin"* ]]; then export PATH="\${WASI_SDK_HOME}/bin:\${PATH}"; fi
+if [[ "\${PATH}" != *"${WASI_SDK_HOME}bin"* ]]; then export PATH="${WASI_SDK_HOME}bin:\${PATH}"; fi
 EOF
 )"
