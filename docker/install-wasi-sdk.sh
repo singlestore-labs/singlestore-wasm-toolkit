@@ -7,6 +7,10 @@ WASI_SDK_HOME="${WASI_SDK_HOME:=/opt/wasi-sdk/}"
 
 mkdir -p ${WASI_SDK_HOME}
 curl -L ${WASI_SDK_URL} | tar -xz -C ${WASI_SDK_HOME} --strip-components 1
+if [ $? -ne 0 ] ; then
+    echo "ERROR: Failed to install WASI SDK"
+    exit 1
+fi
 
 updaterc() {
     if [ "${UPDATE_RC}" = "true" ]; then
