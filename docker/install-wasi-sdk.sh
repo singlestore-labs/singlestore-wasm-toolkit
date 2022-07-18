@@ -1,6 +1,7 @@
 #!/bin/sh
 
-WASI_SDK_VERSION="${WASI_SDK_VERSION:=16.0}"
+UPDATE_RC="${UPDATE_RC:=true}"
+WASI_SDK_VERSION="${WASI_SDK_VERSION:=16}"
 WASI_SDK_URL="${WASI_SDK_URL:=https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-linux.tar.gz}"
 WASI_SDK_HOME="${WASI_SDK_HOME:=/opt/wasi-sdk/}"
 
