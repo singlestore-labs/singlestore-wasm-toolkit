@@ -10,7 +10,7 @@ regex = "1"
 anyhow = "1.0"
 wasmtime = "0.35.3"
 wasmtime-wasi = "0.35.3"
-wit-bindgen-wasmtime = { git = "https://github.com/bytecodealliance/wit-bindgen.git" }
+wit-bindgen-wasmtime = { git = "https://github.com/bytecodealliance/wit-bindgen.git", rev = "60e3c5b41e616fee239304d92128e117dd9be0a7" }
 tide = "0.16.0"
 async-std = { version = "1.8.0", features = ["attributes"] }
 serde = { version = "1.0", features = ["derive"] }

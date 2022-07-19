@@ -55,9 +55,9 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime      \
         cargo-get                                                              \
         cargo-workspaces                                                       \
         cargo-cache                                                            \
-    && cargo install                                                           \
-        --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli  \
     && cargo cache -r all
+
+RUN bash /tmp/library-scripts/install-wit-bindgen.sh
 
 # Clone and build SingleStore tools -- `pushwasm` and `writ`.
 #

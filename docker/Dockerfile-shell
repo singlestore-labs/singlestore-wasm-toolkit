@@ -40,11 +40,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y    \
     && $HOME/.cargo/bin/rustup component add rustfmt rust-src clippy           \
     && $HOME/.cargo/bin/rustup component remove rust-docs                      \
     && $HOME/.cargo/bin/cargo install cargo-wasi cargo-expand cargo-cache      \
-    \
-    && $HOME/.cargo/bin/cargo install                                          \
-        --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli  \
-    \
     && $HOME/.cargo/bin/cargo cache -r all
+
+RUN bash /tmp/library-scripts/install-wit-bindgen.sh
 
 # Clone and build SingleStore tools -- `pushwasm` and `writ`.
 # Make sure to clean up the cargo cache when we're done.
