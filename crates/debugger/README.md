@@ -175,16 +175,16 @@ If you get a Rust compilation error that looks something like this, it means you
 
 ```
 error[E0277]: the trait bound `PolarityScores: Serialize` is not satisfied
-    --> examples/rust/sentiment/src/lib.rs:18:1
+    --> examples/rust/sentimentable/src/lib.rs:18:1
      |
 18   | #[debugger_macro::export_debug_handler]
      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Serialize` is not implemented for `PolarityScores`
 ```
 
-Since external functions uses JSON, you will need to provide an implementation of the `serde::Serialize` trait for each of your custom types. For example, here is the implementation of `Serialize` for the PolarityScores type in the `examples/rust/sentiment` crate:
+Since external functions uses JSON, you will need to provide an implementation of the `serde::Serialize` trait for each of your custom types. For example, here is the implementation of `Serialize` for the PolarityScores type in the `examples/rust/sentimentable` crate:
 
 ```rust
-impl Serialize for sentiment::PolarityScores {
+impl Serialize for sentimentable::PolarityScores {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut map = serializer.serialize_map(None)?;
         map.serialize_entry("compound", &self.compound)?;

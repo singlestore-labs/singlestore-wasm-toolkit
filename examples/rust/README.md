@@ -2,9 +2,9 @@
 
 ## Sentiment Analysis (VADER)
 
-Perform sentiment analysis on a string of english text.
+Perform sentiment analysis on a string of english text. This is an example of a [TVF](https://docs.singlestore.com/managed-service/en/reference/code-engine---powered-by-wasm/create-wasm-tvfs.html).
 
-[code](./sentiment/)
+[code](./sentimentable/)
 
 ## Dates
 
