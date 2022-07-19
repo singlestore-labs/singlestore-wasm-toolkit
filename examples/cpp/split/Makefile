@@ -2,10 +2,10 @@ all: split.wasm
 
 split.wasm:
 	clang++                             \
+	    -g                              \
 	    -fno-exceptions                 \
 	    --target=wasm32-unknown-wasi    \
 	    -mexec-model=reactor            \
-	    -s                              \
 	    -I.                             \
 	    -o split.wasm                   \
 	    split.cpp
