@@ -1,10 +1,9 @@
 all: power.wasm
 
 power.wasm:
-	clang     						    \
+	clang    			    \
 	    --target=wasm32-unknown-wasi    \
 	    -mexec-model=reactor            \
-	    -s                              \
 	    -I.                             \
 	    -o power.wasm                   \
 	    power.c
