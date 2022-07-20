@@ -40,7 +40,7 @@ rust:
 	    echo "=====================================================" ; \
 	    echo "Building Rust example '`basename $$D`'" ; \
 	    echo "=====================================================" ; \
-	    pushd $$D && cargo wasi build --lib $(REL_FLAGS) && popd ; \
+		make -C $$D $(TARGET) ; \
 	done
 
 ##############################################################################
@@ -61,6 +61,6 @@ cpp-clean:
 rust-clean:
 	@for D in `find rust -maxdepth 1 -mindepth 1 -type d` ; do \
 	    echo "Cleaning Rust example '`basename $$D`'..." ; \
-		pushd $$D && cargo clean && popd ; \
+		make -C $$D clean ; \
 	done
 
