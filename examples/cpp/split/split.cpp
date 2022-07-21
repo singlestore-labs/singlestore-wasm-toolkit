@@ -84,7 +84,7 @@ void split_split_str(split_string_t *phrase, split_string_t *delim,
   // Populate the result.
   bool err = false;
   auto res =
-      (split_subphrase_t *)malloc(phr.size() * sizeof(split_subphrase_t));
+      (split_subphrase_t *)malloc(subs.size() * sizeof(split_subphrase_t));
   for (int i = 0; !err && i < subs.size(); ++i) {
     auto &sub = subs[i].first;
     res[i].idx = static_cast<int32_t>(subs[i].second);
