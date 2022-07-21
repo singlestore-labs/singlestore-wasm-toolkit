@@ -140,7 +140,7 @@ You may need to adjust the paths to your files if your SQL client is not in the 
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM INFILE 'power.wasm' WITH WIT FROM INFILE 'power.wit';
+CREATE FUNCTION `power-of` AS WASM FROM LOCAL INFILE 'power.wasm' WITH WIT FROM LOCAL INFILE 'power.wit';
 ```
 
 If the UDF has been created successfully, you will see something like:
@@ -318,7 +318,7 @@ You may need to adjust the paths to your files if your SQL client is not in the 
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE 'split.wasm' WITH WIT FROM INFILE 'split.wit';
+CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM LOCAL INFILE 'split.wasm' WITH WIT FROM LOCAL INFILE 'split.wit';
 ```
 
 Now we can run our Wasm function as a TVF like this:

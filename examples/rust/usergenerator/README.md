@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
   SORT KEY (created)
 );
 
-CREATE OR REPLACE FUNCTION `gen-users` RETURNS TABLE AS WASM FROM INFILE '/usergenerator.wasm' WITH WIT FROM INFILE '/usergenerator.wit';
+CREATE OR REPLACE FUNCTION `gen-users` RETURNS TABLE AS WASM FROM LOCAL INFILE '/usergenerator.wasm' WITH WIT FROM LOCAL INFILE '/usergenerator.wit';
 
 -- Test your new function!
 SELECT * FROM `gen-users`(100);

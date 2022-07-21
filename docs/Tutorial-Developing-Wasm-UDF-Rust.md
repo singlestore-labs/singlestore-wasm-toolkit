@@ -123,7 +123,7 @@ We can now load the module into the database using the same procedure we discuss
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM INFILE '/workdir/target/wasm32-wasi/debug/power.wasm' WITH WIT FROM INFILE '/workdir/power.wit';
+CREATE FUNCTION `power-of` AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/power.wasm' WITH WIT FROM LOCAL INFILE '/workdir/power.wit';
 ```
 
 And, once again, running the following SQL gives us back the expected result of 256.
@@ -216,7 +216,7 @@ And, we’ll finish up by loading the module into the database as TVF, just as w
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE '/workdir/target/wasm32-wasi/debug/split.wasm' WITH WIT FROM INFILE '/workdir/split.wit';
+CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/split.wasm' WITH WIT FROM LOCAL INFILE '/workdir/split.wit';
 ```
 
 Then:
