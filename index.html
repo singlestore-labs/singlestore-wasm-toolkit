@@ -252,7 +252,7 @@ Create your folders inside the repository structure so they are available within
 You may need to adjust the paths to your files if your SQL client is not in the same directory as them or does not support relative paths.</p>
 <pre><code class="language-sql">CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM INFILE 'power.wasm' WITH WIT FROM INFILE 'power.wit';
+CREATE FUNCTION `power-of` AS WASM FROM LOCAL INFILE 'power.wasm' WITH WIT FROM LOCAL INFILE 'power.wit';
 </code></pre>
 <p>If the UDF has been created successfully, you will see something like:</p>
 <pre><code>Query OK, 1 row affected (0.029 sec)
@@ -379,7 +379,7 @@ split-str: function(phrase: string, delim: string) -&gt; list&lt;subphrase&gt;
 You may need to adjust the paths to your files if your SQL client is not in the same directory as them or does not support relative paths.</p>
 <pre><code class="language-sql">CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM INFILE 'split.wasm' WITH WIT FROM INFILE 'split.wit';
+CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM LOCAL INFILE 'split.wasm' WITH WIT FROM LOCAL INFILE 'split.wit';
 </code></pre>
 <p>Now we can run our Wasm function as a TVF like this:</p>
 <pre><code class="language-sql">SELECT * FROM `split-str`('wasm_rocks_the_house', '_');
