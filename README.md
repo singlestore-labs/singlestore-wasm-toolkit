@@ -164,15 +164,6 @@ Information about the Rust examples can be found [here](https://github.com/singl
 
 The SingleStoreDB Wasm UDF/TVF documentation is [here](https://docs.singlestore.com/managed-service/en/reference/code-engine---powered-by-wasm.html).
 
-# Getting SingleStoreDB
-
-1. [Sign up](https://www.singlestore.com/try-free/) for a free SingleStore license. This allows you to run up to 4 nodes up to 32 gigs each for free. 
-
-1. Grab your license key from [SingleStore portal](https://portal.singlestore.com/?utm_medium=osm&utm_source=github) and set it as an environment variable.
-```bash
-export SINGLESTORE_LICENSE="singlestore license"
-```
-
 # Resources
 
 * [Documentation](https://docs.singlestore.com)

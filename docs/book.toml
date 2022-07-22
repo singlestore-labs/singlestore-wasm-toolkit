@@ -4,3 +4,8 @@ language = "en"
 multilingual = false
 src = "src"
 title = "SingleStore Wasm Toolkit"
+
+[output.html]
+
+[output.linkcheck]
+
