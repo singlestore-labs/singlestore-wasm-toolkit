@@ -43,10 +43,10 @@ jobs:
       run: make cpp-debug cpp-release
       working-directory: ./examples
       paths:
-      - 'examples/cpp/**'
+      - 'cpp/**'
 
     - name: Test rust build
       run: make rust-debug rust-release
       working-directory: ./examples
       paths: 
-      - 'examples/rust/**'
+      - 'rust/**'
