@@ -64,7 +64,7 @@ Before we do any coding, let’s first define our interface. WIT is an Interface
 Let’s say we want to develop a program that simply computes x^y (that is, x to the power of y). The interface for this is simple; here is the WIT IDL for it:
 
 ```wit
-power-of: function(base: s32, exp: s32) -> s32
+power-of: func(base: s32, exp: s32) -> s32
 ```
 
 This function will take two signed 32-bit integers as arguments (the base and the exponent) and return a single signed 32-bit integer.
@@ -140,7 +140,7 @@ You may need to adjust the paths to your files if your SQL client is not in the 
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM LOCAL INFILE 'power.wasm' WITH WIT FROM LOCAL INFILE 'power.wit';
+CREATE FUNCTION `power_of` AS WASM FROM LOCAL INFILE 'power.wasm' WITH WIT FROM LOCAL INFILE 'power.wit';
 ```
 
 If the UDF has been created successfully, you will see something like:
@@ -152,7 +152,7 @@ Query OK, 1 row affected (0.029 sec)
 Now our UDF is ready to run!  To do this, just run the following command:
 
 ```sql
-SELECT `power-of`(2, 8);
+SELECT `power_of`(2, 8);
 ```
 
 ... which should return a single-column row with the value 256, of course.
@@ -175,7 +175,7 @@ record subphrase {
   str: string,
   idx: s32
 }
-split-str: function(phrase: string, delim: string) -> list<subphrase>
+split-str: func(phrase: string, delim: string) -> list<subphrase>
 ```
 
 ### Implementing the Specification
@@ -318,13 +318,13 @@ You may need to adjust the paths to your files if your SQL client is not in the 
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM LOCAL INFILE 'split.wasm' WITH WIT FROM LOCAL INFILE 'split.wit';
+CREATE FUNCTION `split_str` RETURNS TABLE AS WASM FROM LOCAL INFILE 'split.wasm' WITH WIT FROM LOCAL INFILE 'split.wit';
 ```
 
 Now we can run our Wasm function as a TVF like this:
 
 ```sql
-SELECT * FROM `split-str`('wasm_rocks_the_house', '_');
+SELECT * FROM `split_str`('wasm_rocks_the_house', '_');
 ```
 ... which will produce the following output:
 
