@@ -1,0 +1,20 @@
+<!-- GENERATED FILE; DO NOT CHANGE! -->
+
+# Creating a WIT Specification for the `power-of` Example
+Before we do any coding, let’s first define our interface. WIT is an Interface Definition Language (IDL) used to describe Wasm modules.  It is provided in files with the `.wit` extension.
+
+
+This example will compute x^y (that is, "x to the power of y").
+
+In a new work directory, create a new file called `power.wit` in your text editor, and add this content:
+
+```wit
+power-of: func(b: s32, exp: s32) -> s32
+```
+
+This function will take two signed 32-bit integers as arguments (the base `b` and the exponent `exp`) and return a single, signed 32-bit integer.
+
+Go ahead and save the file.  
+
+Now we’re ready to [write some code](Tutorial-Impl-CPP-Power.md).
+
