@@ -5,12 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-defaults:
-  run:
-    shell: bash
 
-# Cancel any in-flight jobs for the same PR/branch so there's only one active
-# at a time
+# Cancel any in-flight jobs for the same PR/branch so there's only one active at a time
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,11 +14,7 @@ concurrency:
 jobs:
   test:
     name: Test
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        mode: [debug, release]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -38,45 +30,31 @@ jobs:
     - name: Install cargo-wasi
       run: cargo install cargo-wasi
 
-    - if : matrix.os == 'ubuntu-latest'
-      run: |
-        curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf -
-        echo "`pwd`/wasi-sdk-16.0/bin" >> $GITHUB_PATH
+    - run: |
+        curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf - -C $GITHUB_WORKSPACE/
+        echo "$GITHUB_WORKSPACE/wasi-sdk-16.0/bin" >> $GITHUB_PATH
 
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax  
+        python-version: '3.x'
     - run: pip install mypy wasmtime
 
-    # TODO install writ
-    # - uses: actions/checkout@v3
-    #   # if: ${{ env.SECRETS_AVAILABLE == 'true' }}
-    #   with:
-    #     token: '${{ secrets.GITHUB_TOKEN }}'
-    #     repository: 'singlestore-labs/writ'
-    # - run: |
-    #     echo "$GITHUB_WORKSPACE/writ/bin" >> $GITHUB_PATH
-
-    - if: matrix.mode == 'release'
-      name: Test cpp-release build
+    - name: Test cpp-release build
       run: echo "$PATH" && make cpp-release
       working-directory: ./examples
       # paths: '**.cpp'
 
-    - if: matrix.mode == 'debug'
-      name: Test cpp-debug build
+    - name: Test cpp-debug build
       run: make cpp-debug
       working-directory: ./examples
       # paths: '**.cpp'
 
-    - if: matrix.mode == 'release'
-      name: Test rust-release build
+    - name: Test rust-release build
       run: make rust-release
       working-directory: ./examples
       # paths: '**.rust'
 
-    - if: matrix.mode == 'debug'
-      name: Test rust-debug build
+    - name: Test rust-debug build
       run: make rust-debug
       working-directory: ./examples
       # paths: '**.rust'
