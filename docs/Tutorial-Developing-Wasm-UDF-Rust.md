@@ -55,17 +55,17 @@ If you’d prefer to set up your development environment manually, you’ll need
 
 ### Creating the WIT Specification
 
-Before we do any coding, let’s first define our interface. WIT is an Interface Definition Language (IDL) used for describing WASM modules in `*.wit` files. We'll create a .wit specification for our new function. In a new work directory, open a new file called power.wit in your text editor.
+Before we do any coding, let’s first define our interface. WIT is an Interface Definition Language (IDL) used for describing WASM modules in `*.wit` files. We'll create a .wit specification for our new function. In a new work directory, open a new file called `power.wit` in your text editor.
 
 Let’s say we want to develop a program that simply computes $x^y$. The interface for this is simple; here is the WIT IDL for it:
 
 ```wit
-power-of: function(base: s32, exp: s32) -> s32
+power-of: func(base: s32, exp: s32) -> s32
 ```
 
 This function will take two signed 32-bit integers as arguments (the base and the exponent) and return a single signed 32-bit integer.
 
-Copy and paste the above code into power.wit and save it. Now we’re ready to write some code.
+Copy and paste the above code into `power.wit` and save it. Now we’re ready to write some code.
 
 ### Using Bindgen
 To implement this interface in Rust, we're going to use wit-bindgen. First, from within a new work directory, run `cargo init --vcs none --lib`. This will set up a skeletal Rust source tree.
@@ -85,7 +85,7 @@ wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git"
 crate-type = ["cdylib"]
 ```
 
-We’ll also need the power.wit file we used above. Either recreate it or copy it into your work directory.
+We’ll also need the `power.wit` file we used above. Either recreate it or copy it into your work directory.
 
 Now we’re almost ready to roll. Edit the file `src/lib.rs` and replace its content with this:
 
@@ -123,13 +123,13 @@ We can now load the module into the database using the same procedure we discuss
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `power-of` AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/power.wasm' WITH WIT FROM LOCAL INFILE '/workdir/power.wit';
+CREATE FUNCTION `power_of` AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/power.wasm' WITH WIT FROM LOCAL INFILE '/workdir/power.wit';
 ```
 
 And, once again, running the following SQL gives us back the expected result of 256.
 
 ```sql
-SELECT `power-of`(2, 8);
+SELECT `power_of`(2, 8);
 ```
 
 Before moving on to the next example, drop your `wasm_tutorial` database.
@@ -175,7 +175,7 @@ wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git,
 crate-type = ["cdylib"]
 ```
 
-Next, let’s copy or recreate the split.wit file in our work directory.
+Next, let’s copy or recreate the `split.wit` file in our work directory.
 
 And, for the implementation, edit the `src/lib.rs` file and replace its contents with this:
 
@@ -216,13 +216,13 @@ And, we’ll finish up by loading the module into the database as TVF, just as w
 ```sql
 CREATE DATABASE wasm_tutorial;
 USE wasm_tutorial;
-CREATE FUNCTION `split-str` RETURNS TABLE AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/split.wasm' WITH WIT FROM LOCAL INFILE '/workdir/split.wit';
+CREATE FUNCTION `split_str` RETURNS TABLE AS WASM FROM LOCAL INFILE '/workdir/target/wasm32-wasi/debug/split.wasm' WITH WIT FROM LOCAL INFILE '/workdir/split.wit';
 ```
 
 Then:
 
 ```sql
-SELECT * FROM `split-str`('wasm_rocks_the_house', '_');
+SELECT * FROM `split_str`('wasm_rocks_the_house', '_');
 ```
 
 ## Wrap-Up
