@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+defaults:
+  run:
+    shell: bash
+
+# Cancel any in-flight jobs for the same PR/branch so there's only one active
+# at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        mode: [debug, release]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+    
+    - name: Install wasm32-unknown-unknown target
+      run: rustup target add wasm32-unknown-unknown
+    - name: Install wasm32-wasi target
+      run: rustup target add wasm32-wasi
+
+    - if : matrix.os == 'ubuntu-latest'
+      run: |
+        curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf -
+        echo "WASI_SDK_PATH=`pwd`/wasi-sdk-16.0" >> $GITHUB_ENV
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax  
+    - run: pip install mypy wasmtime
+
+    - uses: actions/checkout@v3
+      with:
+        repository: 'singlestore-labs/writ'
+    - run: |
+        echo "$GITHUB_WORKSPACE/writ/bin" >> $GITHUB_ENV
+
+    - if: matrix.mode == 'release'
+      name: Test cpp-release build
+      run: make cpp-release
+      # paths: '**.cpp'
+
+    - if: matrix.mode == 'debug'
+      name: Test cpp-debug build
+      run: make cpp-debug
+      # paths: '**.cpp'
+
+    - if: matrix.mode == 'release'
+      name: Test rust-release build
+      run: make rust-release
+      # paths: '**.rust'
+
+    - if: matrix.mode == 'debug'
+      name: Test rust-debug build
+      run: make rust-debug
+      # paths: '**.rust'
