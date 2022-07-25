@@ -39,22 +39,14 @@ jobs:
         python-version: '3.x'
     - run: pip install mypy wasmtime
 
-    - name: Test cpp-release build
-      run: echo "$PATH" && make cpp-release
+    - name: Test cpp build
+      run: make cpp-debug cpp-release
       working-directory: ./examples
-      # paths: '**.cpp'
+      paths:
+      - 'examples/cpp/**'
 
-    - name: Test cpp-debug build
-      run: make cpp-debug
+    - name: Test rust build
+      run: make rust-debug rust-release
       working-directory: ./examples
-      # paths: '**.cpp'
-
-    - name: Test rust-release build
-      run: make rust-release
-      working-directory: ./examples
-      # paths: '**.rust'
-
-    - name: Test rust-debug build
-      run: make rust-debug
-      working-directory: ./examples
-      # paths: '**.rust'
+      paths: 
+      - 'examples/rust/**'

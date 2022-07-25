@@ -27,14 +27,3 @@ int32_t __wasm_export_power_power_of(int32_t arg, int32_t arg0) {
   int32_t ret = power_power_of(arg, arg0);
   return ret;
 }
-
-int32_t power_power_of(int32_t base, int32_t exp)
-{
-    int32_t res = 1;
-    for (int32_t i = 0; i < exp; ++i)
-    {
-        res *= base;
-    }
-    return res;
-}
-

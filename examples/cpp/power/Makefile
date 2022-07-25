@@ -12,6 +12,7 @@ power.wasm:
 	    -mexec-model=reactor            \
 	    -I.                             \
 	    -o power.wasm                   \
+		power_impl.c                    \
 	    power.c
 
 .PHONY: test
