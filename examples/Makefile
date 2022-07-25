@@ -63,4 +63,3 @@ rust-clean:
 	    echo "Cleaning Rust example '`basename $$D`'..." ; \
 		make -C $$D clean ; \
 	done
-
