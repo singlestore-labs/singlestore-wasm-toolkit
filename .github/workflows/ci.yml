@@ -29,6 +29,8 @@ jobs:
       run: rustup target add wasm32-wasi
     - name: Install cargo-wasi
       run: cargo install cargo-wasi
+    - name: Install wit-bindgen
+      run: cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli --rev 60e3c5b41e616fee239304d92128e117dd9be0a7
 
     - run: |
         curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf - -C $GITHUB_WORKSPACE/
@@ -39,22 +41,10 @@ jobs:
         python-version: '3.x'
     - run: pip install mypy wasmtime
 
-    - name: Test cpp-release build
-      run: echo "$PATH" && make cpp-release
+    - name: Test cpp build
+      run: make cpp-debug cpp-release
       working-directory: ./examples
-      # paths: '**.cpp'
 
-    - name: Test cpp-debug build
-      run: make cpp-debug
+    - name: Test rust build
+      run: make rust-debug rust-release
       working-directory: ./examples
-      # paths: '**.cpp'
-
-    - name: Test rust-release build
-      run: make rust-release
-      working-directory: ./examples
-      # paths: '**.rust'
-
-    - name: Test rust-debug build
-      run: make rust-debug
-      working-directory: ./examples
-      # paths: '**.rust'

@@ -24,3 +24,7 @@ Cargo.lock
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Ignore generated bindings for examples
+examples/cpp/power/power.c
+examples/cpp/split/split.cpp
