@@ -84,7 +84,7 @@ git clone https://github.com/singlestore-labs/singlestore-wasm-toolkit.git
 
 1. Edit the source code as necessary.
 
-1. When you are ready to compile the Wasm module, press *Ctrl-\`* (that's the backtick character) to open a console window in the IDE.  You should see a prompt prefixed with `s2-dev-shell`.  Be sure to change (`cd`) to the directory of the code you intend to compile.
+1. When you are ready to compile the Wasm module, press *Ctrl-\`* (that's the backtick character) to open a console window in the IDE.  You should see a prompt prefixed with `dev-shell`.  Be sure to change (`cd`) to the directory of the code you intend to compile.
 
 ## Getting Started With the Standalone Container
 
@@ -92,7 +92,7 @@ git clone https://github.com/singlestore-labs/singlestore-wasm-toolkit.git
 
 1. If this is your first time running this container, it will be downloaded from the GitHub Docker registry.  This may take a few minutes, depending on your internet connection.
 
-1. You should now see a prompt prefixed with `s2-dev-shell`.  The directory you supplied in the argument will be mounted to `~/src` in the container, and will be the current working directory when the prompt appears.
+1. You should now see a prompt prefixed with `dev-shell`.  The directory you supplied in the argument will be mounted to `~/src` in the container, and will be the current working directory when the prompt appears.
 
 1. Edit your source code locally, using whatever tools your prefer.  You only need to use the dev-shell when you are ready to compile, test, or deploy.
 

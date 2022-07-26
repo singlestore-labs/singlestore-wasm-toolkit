@@ -10,7 +10,7 @@ This container provides a standalone shell environment configured with a variety
 
 1. You should now see the following prompt:
 ```
-[s2-dev-shell]:~/src %
+[dev-shell]:~/src %
 ```
 
 The `src` directory has been mounted from `/home/$USER/wasm-tutorial` (or whatever alternative directory you specified in step 3).  It is *not* necessary to write the code for this tutorial inside the container's shell; you may use your preferred editing workflow for this.  However, please *do* be sure to run all suggested build and deployment commands inside the container's shell so that you have access to the necessary tools.

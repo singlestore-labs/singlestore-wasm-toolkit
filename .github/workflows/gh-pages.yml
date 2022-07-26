@@ -22,6 +22,8 @@ jobs:
         with:
           mdbook-version: '0.4.18'
 
+      - run: cargo install mdbook-linkcheck
+
       - run: mdbook build docs
 
       - name: Deploy
