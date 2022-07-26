@@ -14,5 +14,8 @@ record subphrase {
 split-str: func(phrase: string, delim: string) -> list<subphrase>
 ```
 
-Now we're ready to [write some code](Tutorial-Impl-CPP-Split.md).
+Now we’re ready to write some code.                                                
+                                                                                 
+* If you'd like to learn about implementing this example in C++, please look [here](Tutorial-Impl-CPP-Split.md).
+* If you'd like to learn about implementing this example in Rust, please look [here](Tutorial-Impl-Rust-Split.md).
 

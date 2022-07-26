@@ -16,5 +16,8 @@ This function will take two signed 32-bit integers as arguments (the base `b` an
 
 Go ahead and save the file.  
 
-Now we’re ready to [write some code](Tutorial-Impl-CPP-Power.md).
+Now we’re ready to write some code.
+
+* If you'd like to learn about implementing this example in C, please look [here](Tutorial-Impl-CPP-Power.md).
+* If you'd like to learn about implementing this example in Rust, please look [here](Tutorial-Impl-Rust-Power.md).
 
