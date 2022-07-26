@@ -1,0 +1,1 @@
+The `writ` utility provides a convenient way for us to test our Wasm function in isolation before we load it into the database.  It accepts JSON-formatted arguments on the command-line, casts them to the actual types defined in the Wasm function, and then passes them in.

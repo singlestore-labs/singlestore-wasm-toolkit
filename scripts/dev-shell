@@ -15,6 +15,8 @@ Usage: $0 [PROJDIR]
 If provided, PROJDIR specifies the root of the source directory for the 
 project you want to compile.  This will be mapped into the container under
 "/home/$USER/src".
+
+To rebuild the image, run "./scripts/dev-shell --rebuild ."
 EOF
     exit 1
 }

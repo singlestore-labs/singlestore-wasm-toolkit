@@ -49,19 +49,8 @@ WORKDIR /home/vscode
 #
 RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime      \
     && rm -rf /tmp/pip-tmp                                                     \
-    \
-    && rustup target add wasm32-unknown-unknown wasm32-wasi                    \
-    && cargo install                                                           \
-        twiggy                                                                 \
-        cargo-wasi                                                             \
-        cargo-expand                                                           \
-        mdbook                                                                 \
-        cargo-get                                                              \
-        cargo-workspaces                                                       \
-        cargo-cache                                                            \
-    && cargo cache -r all
-
-RUN bash /tmp/library-scripts/install-wit-bindgen.sh
+    && bash /tmp/library-scripts/install-rust-tools.sh                         \
+    && bash /tmp/library-scripts/install-wit-bindgen.sh
 
 # Clone and build SingleStore tools -- `pushwasm` and `writ`.
 #

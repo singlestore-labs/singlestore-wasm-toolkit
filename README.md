@@ -84,7 +84,7 @@ git clone https://github.com/singlestore-labs/singlestore-wasm-toolkit.git
 
 1. Edit the source code as necessary.
 
-1. When you are ready to compile the Wasm module, press *Ctrl-\`* (that's the backtick character) to open a console window in the IDE.  You should see a prompt prefixed with `s2-dev-shell`.  Be sure to change (`cd`) to the directory of the code you intend to compile.
+1. When you are ready to compile the Wasm module, press *Ctrl-\`* (that's the backtick character) to open a console window in the IDE.  You should see a prompt prefixed with `dev-shell`.  Be sure to change (`cd`) to the directory of the code you intend to compile.
 
 ## Getting Started With the Standalone Container
 
@@ -92,7 +92,7 @@ git clone https://github.com/singlestore-labs/singlestore-wasm-toolkit.git
 
 1. If this is your first time running this container, it will be downloaded from the GitHub Docker registry.  This may take a few minutes, depending on your internet connection.
 
-1. You should now see a prompt prefixed with `s2-dev-shell`.  The directory you supplied in the argument will be mounted to `~/src` in the container, and will be the current working directory when the prompt appears.
+1. You should now see a prompt prefixed with `dev-shell`.  The directory you supplied in the argument will be mounted to `~/src` in the container, and will be the current working directory when the prompt appears.
 
 1. Edit your source code locally, using whatever tools your prefer.  You only need to use the dev-shell when you are ready to compile, test, or deploy.
 
@@ -163,15 +163,6 @@ For instructions on using the `pushwasm` tool, please go [here](https://github.c
 Information about the Rust examples can be found [here](https://github.com/singlestore-labs/singlestore-wasm-toolkit/blob/main/examples/rust/README.md).
 
 The SingleStoreDB Wasm UDF/TVF documentation is [here](https://docs.singlestore.com/managed-service/en/reference/code-engine---powered-by-wasm.html).
-
-# Getting SingleStoreDB
-
-1. [Sign up](https://www.singlestore.com/try-free/) for a free SingleStore license. This allows you to run up to 4 nodes up to 32 gigs each for free. 
-
-1. Grab your license key from [SingleStore portal](https://portal.singlestore.com/?utm_medium=osm&utm_source=github) and set it as an environment variable.
-```bash
-export SINGLESTORE_LICENSE="singlestore license"
-```
 
 # Resources
 

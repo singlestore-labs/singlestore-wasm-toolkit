@@ -35,13 +35,8 @@ ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
 # Install the Rust toolchain, targets, useful components, tools, and wit-bindgen.
 #
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y    \
-    && $HOME/.cargo/bin/rustup target add wasm32-wasi wasm32-unknown-unknown   \
-    && $HOME/.cargo/bin/rustup component add rustfmt rust-src clippy           \
-    && $HOME/.cargo/bin/rustup component remove rust-docs                      \
-    && $HOME/.cargo/bin/cargo install cargo-wasi cargo-expand cargo-cache      \
-    && $HOME/.cargo/bin/cargo cache -r all
-
-RUN bash /tmp/library-scripts/install-wit-bindgen.sh
+    && bash /tmp/library-scripts/install-rust-tools.sh                         \
+    && bash /tmp/library-scripts/install-wit-bindgen.sh
 
 # Clone and build SingleStore tools -- `pushwasm` and `writ`.
 # Make sure to clean up the cargo cache when we're done.
@@ -65,7 +60,7 @@ RUN git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git       \
 # Hacks and stuff.
 #
 RUN echo "set mouse=r" >> ~/.vimrc                                             \
-    && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]s2-dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
+    && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
         >> ~/.bashrc                                                           \
     && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
 
