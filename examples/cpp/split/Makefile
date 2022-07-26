@@ -5,7 +5,7 @@ debug: split.wasm
 .PHONY: release
 release: split.wasm
 
-split.wasm:
+split.wasm: gen
 	clang++                             \
 	    $(DBGFLAGS)                     \
 	    -fno-exceptions                 \
@@ -13,7 +13,8 @@ split.wasm:
 	    -mexec-model=reactor            \
 	    -I.                             \
 	    -o split.wasm                   \
-	    split.cpp
+		split.cpp                       \
+	    split_impl.cpp
 
 .PHONY: test
 test: debug
@@ -25,6 +26,13 @@ test: debug
 	    -e '[{"str": "hello", "idx": 0}]' \
             --wit split.wit split.wasm split-str "hello" " "
 	@echo PASS
+
+.PHONY: gen
+gen:
+	wit-bindgen c --export split.wit
+	# temporary: https://github.com/bytecodealliance/wit-bindgen/issues/290
+	sed "s:canonical_abi_realloc(NULL, 0, 1, ret->len:\(char \*\)canonical_abi_realloc(NULL, 0, 1, ret->len:g" split.c >split.cpp
+	rm split.c
 
 .PHONY: clean
 clean:
