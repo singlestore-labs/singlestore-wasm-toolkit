@@ -5,7 +5,7 @@ debug: power.wasm
 .PHONY: release
 release: power.wasm
 
-power.wasm:
+power.wasm: gen
 	clang                               \
 	    $(DBGFLAGS)                     \
 	    --target=wasm32-unknown-wasi    \
@@ -23,6 +23,10 @@ test: debug
 	@echo PASS
 	writ --expect 0 --wit power.wit power.wasm power-of 0 2
 	@echo PASS
+
+.PHONY: gen
+gen:
+	wit-bindgen c --export power.wit
 
 .PHONY: clean
 clean:

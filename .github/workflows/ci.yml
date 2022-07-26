@@ -42,11 +42,9 @@ jobs:
     - name: Test cpp build
       run: make cpp-debug cpp-release
       working-directory: ./examples
-      paths:
-      - 'cpp/**'
+      paths: 'cpp/**'
 
     - name: Test rust build
       run: make rust-debug rust-release
       working-directory: ./examples
-      paths: 
-      - 'rust/**'
+      paths: 'rust/**'
