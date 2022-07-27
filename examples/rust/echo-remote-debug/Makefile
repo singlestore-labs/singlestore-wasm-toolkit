@@ -14,7 +14,7 @@ wasm:
 	cargo wasi build --lib $(RELFLAGS)
 
 .PHONY: test
-test: debug
+test: wasm
 	writ \
 	    -e "hello there hello there" \
             --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm echo \
