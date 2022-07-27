@@ -152,7 +152,7 @@ For both container types, iterative development proceeds the same.  We'll use th
 
 # Additional Information
 
-To learn about the process of developing a Wasm UDF or TVF in more detail, please have a look at our [tutorial](https://github.com/singlestore-labs/wasm-udf-tutorial/).
+To learn about the process of developing a Wasm UDF or TVF in more detail, please have a look at our [tutorial](https://singlestore-labs.github.io/singlestore-wasm-toolkit/html/Tutorial-Overview.html).
 
 Information about setting up the remote debugging tool can be found [here](https://github.com/singlestore-labs/singlestore-wasm-toolkit/blob/main/crates/debugger/README.md).
 
