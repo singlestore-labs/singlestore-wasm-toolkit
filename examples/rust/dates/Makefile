@@ -14,7 +14,7 @@ wasm:
 	cargo wasi build --lib $(RELFLAGS)
 
 .PHONY: test
-test: wasm
+test:
 	writ \
 	    -e "2022-07-30" \
             --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm next-saturday \
