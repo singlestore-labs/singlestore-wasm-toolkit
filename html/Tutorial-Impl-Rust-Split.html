@@ -153,10 +153,7 @@ wit-bindgen-rust = { git = &quot;https://github.com/bytecodealliance/wit-bindgen
 crate-type = [&quot;cdylib&quot;]
 </code></pre>
 <p>And, for the implementation, edit the <code>src/lib.rs</code> file and replace its contents with this:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>wit_bindgen_rust::export!(&quot;split.wit&quot;);
+<pre><code class="language-rust noplayground">wit_bindgen_rust::export!(&quot;split.wit&quot;);
 struct Split;
 use crate::split::Subphrase;
 
@@ -176,8 +173,7 @@ impl split::Split for Split {
             .collect()
     }
 } 
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <p>Fortunately, with Rust, we have some nice language features that help make our code concise. Unlike in <a href="Tutorial-Impl-CPP-Split.html"><code>C/C++</code></a>, we don’t need to explicitly free the parameters. Due to Rust’s move semantics, they will be freed implicitly when the function ends. Allocation for the output vector is also managed “under the hood” by Rust’s robust data structures and runtime. Finally, the declaration of the Subphrase struct happens via the <code>wit_bindgen_rust::export macro</code>, so we don’t need to do it.</p>
 <p>Let’s compile the Wasm module now:</p>
 <pre><code class="language-bash">cargo wasi build --lib

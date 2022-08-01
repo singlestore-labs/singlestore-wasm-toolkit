@@ -461,10 +461,7 @@ wit-bindgen-rust = { git = &quot;https://github.com/bytecodealliance/wit-bindgen
 crate-type = [&quot;cdylib&quot;]
 </code></pre>
 <p>Now we’re almost ready to roll. Edit the file <code>src/lib.rs</code> and replace its content with this:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>wit_bindgen_rust::export!(&quot;power.wit&quot;);
+<pre><code class="language-rust noplayground">wit_bindgen_rust::export!(&quot;power.wit&quot;);
 struct Power;
 
 impl power::Power for Power {
@@ -476,8 +473,7 @@ impl power::Power for Power {
         res
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <p>The syntax at the top of the code is boiler-plate. The export macro generates code that declares a trait named after our WIT file (and some other things). So, our main job is here is to implement this trait. If you are curious what the macro actually generates, you can run cargo expand and it will show you the fully expanded source code.</p>
 <p>The WIT IDL is heavily inspired by the Rust language syntax, so it was pretty easy to derive the Rust function signature we needed from the IDL:</p>
 <ul>
@@ -512,10 +508,7 @@ wit-bindgen-rust = { git = &quot;https://github.com/bytecodealliance/wit-bindgen
 crate-type = [&quot;cdylib&quot;]
 </code></pre>
 <p>And, for the implementation, edit the <code>src/lib.rs</code> file and replace its contents with this:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>wit_bindgen_rust::export!(&quot;split.wit&quot;);
+<pre><code class="language-rust noplayground">wit_bindgen_rust::export!(&quot;split.wit&quot;);
 struct Split;
 use crate::split::Subphrase;
 
@@ -535,8 +528,7 @@ impl split::Split for Split {
             .collect()
     }
 } 
-<span class="boring">}
-</span></code></pre></pre>
+</code></pre>
 <p>Fortunately, with Rust, we have some nice language features that help make our code concise. Unlike in <a href="Tutorial-Impl-CPP-Split.html"><code>C/C++</code></a>, we don’t need to explicitly free the parameters. Due to Rust’s move semantics, they will be freed implicitly when the function ends. Allocation for the output vector is also managed “under the hood” by Rust’s robust data structures and runtime. Finally, the declaration of the Subphrase struct happens via the <code>wit_bindgen_rust::export macro</code>, so we don’t need to do it.</p>
 <p>Let’s compile the Wasm module now:</p>
 <pre><code class="language-bash">cargo wasi build --lib
