@@ -27,7 +27,7 @@ crate-type = ["cdylib"]
 
 And, for the implementation, edit the `src/lib.rs` file and replace its contents with this:
 
-```rust
+```rust,noplayground
 wit_bindgen_rust::export!("split.wit");
 struct Split;
 use crate::split::Subphrase;

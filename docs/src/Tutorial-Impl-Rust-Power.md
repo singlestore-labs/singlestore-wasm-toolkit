@@ -25,7 +25,7 @@ crate-type = ["cdylib"]
 
 Now we’re almost ready to roll. Edit the file `src/lib.rs` and replace its content with this:
 
-```rust
+```rust,noplayground
 wit_bindgen_rust::export!("power.wit");
 struct Power;
 
