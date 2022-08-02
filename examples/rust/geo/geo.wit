@@ -1,0 +1,9 @@
+st-convexhull: func(geo: string) -> string
+st-centroid: func(geo: string) -> string
+st-pointn: func(geo: string, index: s64) -> string
+st-closestpoint: func(geo: string, point: string) -> string
+st-envelope: func(geo: string) -> string
+st-intersects: func(geo1: string, geo2: string) -> bool
+st-translate: func(geo: string, dx: float64, dy: float64) -> string
+st-rotate: func(geo: string, rads: float64, point: string) -> string
+st-frechetdistance: func(geo1: string, geo2: string) -> float64
