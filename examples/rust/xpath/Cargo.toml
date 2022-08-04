@@ -1,0 +1,12 @@
+[package]
+name = "xpath"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git", rev = "60e3c5b41e616fee239304d92128e117dd9be0a7" }
+sxd-xpath = "0.4.2"
+sxd-document = "0.3.2"
+
+[lib]
+crate-type = ["cdylib"]

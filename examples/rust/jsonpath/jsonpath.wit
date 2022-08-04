@@ -1,0 +1,2 @@
+eval-jsonpath: func(json: string, expr: string) -> string
+eval-jsonpaths: func(json: string, expr: string) -> list<string>
