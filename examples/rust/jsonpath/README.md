@@ -35,9 +35,9 @@ using the `pushwasm` command.
 
 ```
 pushwasm --prompt mysql://user@host.com:3306/dbname --wit jsonpath.wit \
-         target/wasm32-wasi/release/xpath.wasm eval_jsonpath
+         target/wasm32-wasi/release/jsonpath.wasm eval_jsonpath
 pushwasm --tvf --prompt mysql://user@host.com:3306/dbname --wit jsonpath.wit \
-         target/wasm32-wasi/release/xpath.wasm eval_jsonpaths
+         target/wasm32-wasi/release/jsonpath.wasm eval_jsonpaths
 ```
 
 ## Using the functions
