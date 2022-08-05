@@ -1,0 +1,2 @@
+eval-xpath: func(xml: string, expr: string) -> string
+eval-xpaths: func(xml: string, expr: string) -> list<string>
