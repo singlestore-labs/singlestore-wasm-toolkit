@@ -38,8 +38,20 @@ Use the Faker library to generate some fake user profiles.
 
 [code with remote debugging instrumentation](./usergenerator-remote-debug)
 
-### Geo
+## Geo
 
 Provides some missing geospatial functions as UDFs, replicating the equivalent PostGIS functions. Uses the *geo* and *wkt* crates.
 
 [code](./geo/)
+
+## XPath
+
+Query XML documents using XPath expressions.
+
+[code](./xpath/)
+
+## JSONPath
+
+Query JSON objects using JSONPath expressions.
+
+[code](./jsonpath/)
