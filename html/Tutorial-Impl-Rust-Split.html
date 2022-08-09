@@ -134,11 +134,28 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="developing-a-more-complex-udf-in-rust"><a class="header" href="#developing-a-more-complex-udf-in-rust">Developing a More Complex UDF in Rust</a></h1>
-<h1 id="initialize-your-source-tree"><a class="header" href="#initialize-your-source-tree">Initialize Your Source Tree</a></h1>
-<p>Start by creating a new work directory and initializing it using <code>cargo init --vcs none --lib</code>.</p>
+                        <!-- GENERATED FILE; DO NOT CHANGE! -->
+<h1 id="developing-the-split-str-example-in-rust"><a class="header" href="#developing-the-split-str-example-in-rust">Developing the <code>split-str</code> example in Rust</a></h1>
+<h2 id="initialize-your-source-tree"><a class="header" href="#initialize-your-source-tree">Initialize Your Source Tree</a></h2>
+<p>To setup our project, we'll need to do a few things:</p>
+<ol>
+<li>
+<p>Ensure that you are in a new directory.  It can be called anything you want.</p>
+</li>
+<li>
+<p>In the work directory, run the following to set up a skeltal Rust source tree:</p>
+<pre><code>cargo init --vcs none --lib
+</code></pre>
+</li>
+<li>
+<p>Now, create a special configuration file to tell utilities like the <em>rust-analyzer</em> that the default build target of this project is Wasm.  Run this command:</p>
+<pre><code class="language-bash">mkdir .cargo &amp;&amp; echo -e &quot;[build]\ntarget = wasm32-wasi\n&quot; &gt; .cargo/config.toml   
+</code></pre>
+</li>
+</ol>
+<h2 id="copy-the-wit-file"><a class="header" href="#copy-the-wit-file">Copy the WIT File</a></h2>
 <p>We'll need the <code>split.wit</code> file we created <a href="Tutorial-WIT-Split.html">earlier</a>.  Copy it into this directory if it is not already there.</p>
-<h3 id="implementing-and-compiling"><a class="header" href="#implementing-and-compiling">Implementing and Compiling</a></h3>
+<h2 id="implementing-and-compiling"><a class="header" href="#implementing-and-compiling">Implementing and Compiling</a></h2>
 <p>Much of this will be similar to the techniques we used in the <a href="Tutorial-Impl-Rust-Power.html"><code>power-of</code> example</a>.</p>
 <p>Edit the <code>Cargo.toml</code> file so it looks like this:</p>
 <pre><code class="language-toml">[package]
@@ -167,7 +184,7 @@ impl split::Split for Split {
                     str: s.to_string(),
                     idx: *idx as i32
                 };
-                *idx += (s.len() + delim.len()) as i32;
+                *idx += (s.0 + delim.0) as i32;
                 Some(current)
             })
             .collect()
