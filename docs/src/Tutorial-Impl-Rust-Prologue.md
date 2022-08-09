@@ -11,5 +11,5 @@ To setup our project, we'll need to do a few things:
                                                                                  
 1. Now, create a special configuration file to tell utilities like the *rust-analyzer* that the default build target of this project is Wasm.  Run this command:
    ```bash                                                                          
-   mkdir .cargo && echo -e "[build]\ntarget = wasm32-wasi\n" > .cargo/config.toml   
+   mkdir .cargo && echo -e "[build]\ntarget = \"wasm32-wasi\"\n" > .cargo/config.toml   
    ```                                                                              
