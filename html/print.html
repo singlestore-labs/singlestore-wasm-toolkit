@@ -458,7 +458,7 @@ split-str: func(phrase: string, delim: string) -&gt; list&lt;subphrase&gt;
 </li>
 <li>
 <p>Now, create a special configuration file to tell utilities like the <em>rust-analyzer</em> that the default build target of this project is Wasm.  Run this command:</p>
-<pre><code class="language-bash">mkdir .cargo &amp;&amp; echo -e &quot;[build]\ntarget = wasm32-wasi\n&quot; &gt; .cargo/config.toml   
+<pre><code class="language-bash">mkdir .cargo &amp;&amp; echo -e &quot;[build]\ntarget = \&quot;wasm32-wasi\&quot;\n&quot; &gt; .cargo/config.toml   
 </code></pre>
 </li>
 </ol>
@@ -521,7 +521,7 @@ impl power::Power for Power {
 </li>
 <li>
 <p>Now, create a special configuration file to tell utilities like the <em>rust-analyzer</em> that the default build target of this project is Wasm.  Run this command:</p>
-<pre><code class="language-bash">mkdir .cargo &amp;&amp; echo -e &quot;[build]\ntarget = wasm32-wasi\n&quot; &gt; .cargo/config.toml   
+<pre><code class="language-bash">mkdir .cargo &amp;&amp; echo -e &quot;[build]\ntarget = \&quot;wasm32-wasi\&quot;\n&quot; &gt; .cargo/config.toml   
 </code></pre>
 </li>
 </ol>
