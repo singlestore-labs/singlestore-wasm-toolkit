@@ -1,10 +1,12 @@
-# SingleStore Wasm Toolkit And Examples
+# SingleStore Wasm Toolkit, Tutorial, And Examples
 
-This repository provides utilities intended to help you streamline development of Wasm UDFs and TVFs for SingleStoreDB.  It consists of development containers, documentation, and a collection of example Wasm programs.
+This repository provides utilities and documentation intended to help you streamline development of Wasm UDFs and TVFs for SingleStoreDB.  It consists of development containers, a tutorial, and a collection of example Wasm programs.
 
-To use the tools in this repo, you will need to have Docker installed on your system.  Most of these tools can be installed locally as well.
+This README describes the technical details on how to get started using this toolkit.  Please also check out our [tutorial](https://singlestore-labs.github.io/singlestore-wasm-toolkit/html/Tutorial-Overview.html), which is great place to start once you are ready to write your first function, and will walk you through specific examples.
 
 # Tools
+
+To use the tools in this repo, you will need to have Docker installed on your system.  Most of these tools can be installed locally as well.
 
 In this repo, you will find two development containers -- one standalone and one designed specifically for VS Code.  These containers attempt to strike a balance between providing a fairly comprehensive set of Wasm-oriented development tools, while still being mindful of image sizes.  Still, the container sizes currently range between 2-3 GB.
 
