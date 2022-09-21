@@ -7,6 +7,14 @@ if [ -z "${DOCKER}" ] ; then
     exit 1
 fi
 
+cleanup()
+{
+    if [ -n "$ENTRY_POINT_FILE" ] ; then
+        rm -f "$ENTRY_POINT_FILE"
+    fi
+}
+trap "cleanup" EXIT
+
 usage()
 {
     cat<<EOF
@@ -20,6 +28,69 @@ To rebuild the image, run "./scripts/dev-shell --rebuild ."
 EOF
     exit 1
 }
+
+abort()
+{
+    MSG="$1"
+    echo "ERROR: $MSG"
+    exit 1
+}
+
+check-err()
+{
+    CODE=$?
+    MSG="$1"
+    if [ $CODE -ne 0 ] ; then
+        abort "$MSG"
+    fi
+}
+
+# Generates content for the dev container's entry point.
+gen-entry-point-file()
+{
+    cat <<EOF
+#!/bin/bash
+
+if [ ! -f /.dockerenv ] ; then
+    echo "This script must be run in a Docker container."
+    exit 1
+fi
+
+if [ \$# -ne 4 ] ; then
+    echo "Usage: \$0 UID GID USER GROUP"
+    exit 1
+fi
+
+XUID=\$1
+XGID=\$2
+XUSER=\$3
+XGROUP=\$4
+
+sudo groupadd --gid \$XGID \$XGROUP
+sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --shell /bin/bash \$XUSER
+sudo chown -R \$XUID:\$XGID /home/stage
+sudo find /home/stage -maxdepth 1 -mindepth 1 -exec mv {} /home/\$XUSER \;
+sudo chown \$XUID:\$XGID /home/\$XUSER
+[ -d /home/\$XUSER/src ] && cd /home/\$XUSER/src
+exec sudo -H -u \$XUSER bash
+EOF
+}
+
+get-script-dir()
+{
+    SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+    echo $SCRIPT_DIR
+}
+
+# Returns 0 if the script is running from inside the singlestore-wasm-toolkit 
+# repository.
+running-in-repo()
+{
+    SCRIPT_DIR=$(get-script-dir)
+    [ -f "$SCRIPT_DIR/../docker/Dockerfile-shell" ]
+}
+
+# Main ########################################################################
 
 REBUILD=0
 while [ $# -gt 0 ] ; do
@@ -42,21 +113,35 @@ PROJ_DIR="${1:-}"
 if [ -n "${PROJ_DIR}" ] ; then
     PROJ_DIR=$(readlink -f "${PROJ_DIR}")
     if [ ! -d "${PROJ_DIR}" ] ; then
-        echo "ERROR: Specified project directory '${PROJ_DIR}' does not exist."
-        exit 1
+        abort "Specified project directory '${PROJ_DIR}' does not exist."
     fi
 fi
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
-REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+ENTRY_POINT_FILE=$(mktemp)
+check-err "Could not create temporary file in which to write entry point script"
+gen-entry-point-file > "${ENTRY_POINT_FILE}"
+check-err "Could not write entry point script contents"
+chmod 755 "${ENTRY_POINT_FILE}"
+check-err "Could not chmod 755 entry point script"
 
-if [ $REBUILD -eq 1 ] ; then
-    pushd "${REPO_DIR}" > /dev/null
-    "${DOCKER}" build \
-        -f "docker/Dockerfile-shell" \
-        -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
-        .
-    popd > /dev/null
+MAP_REPO_DIR_OPT=
+if running-in-repo ; then
+    SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+    REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+    if [ $REBUILD = 1 ] ; then
+        pushd "${REPO_DIR}" > /dev/null
+        "${DOCKER}" build \
+            -f "docker/Dockerfile-shell" \
+            -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
+            .
+        check-err "Failed to build new docker image."
+        popd > /dev/null
+    fi
+    MAP_REPO_DIR_OPT="-v ${REPO_DIR}:/opt/singlestore-wasm-toolkit"
+else
+    if [ $REBUILD = 1 ] ; then
+        abort "Cannot rebuild image unless running from repository."
+    fi
 fi
 
 MAP_PROJ_DIR_OPT=
@@ -67,10 +152,12 @@ if [ -n "${PROJ_DIR}" ] ; then
 fi
 
 "${DOCKER}" run -it --rm \
-    -v "${REPO_DIR}"/scripts/dev-shell-init:/dev-shell-init \
-    -v "${REPO_DIR}":/opt/singlestore-wasm-toolkit \
+    -v "${ENTRY_POINT_FILE}":/dev-shell-init \
+    ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
     ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest \
     /dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
+
+check-err "Failed to run docker image."
 
