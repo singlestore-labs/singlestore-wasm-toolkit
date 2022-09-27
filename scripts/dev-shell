@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
+ENTRY_POINT_FILE=
+ENTRY_POINT_DIR=
+
 DOCKER=$(command -v docker)
 if [ -z "${DOCKER}" ] ; then
     echo "Docker was not found in your PATH.  Aborting."
@@ -9,8 +12,9 @@ fi
 
 cleanup()
 {
-    if [ -n "$ENTRY_POINT_FILE" ] ; then
+    if [ -n "$ENTRY_POINT_DIR" ] ; then
         rm -f "$ENTRY_POINT_FILE"
+        rmdir "$ENTRY_POINT_DIR"
     fi
 }
 trap "cleanup" EXIT
@@ -43,37 +47,6 @@ check-err()
     if [ $CODE -ne 0 ] ; then
         abort "$MSG"
     fi
-}
-
-# Generates content for the dev container's entry point.
-gen-entry-point-file()
-{
-    cat <<EOF
-#!/bin/bash
-
-if [ ! -f /.dockerenv ] ; then
-    echo "This script must be run in a Docker container."
-    exit 1
-fi
-
-if [ \$# -ne 4 ] ; then
-    echo "Usage: \$0 UID GID USER GROUP"
-    exit 1
-fi
-
-XUID=\$1
-XGID=\$2
-XUSER=\$3
-XGROUP=\$4
-
-sudo groupadd --gid \$XGID \$XGROUP
-sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --shell /bin/bash \$XUSER
-sudo chown -R \$XUID:\$XGID /home/stage
-sudo find /home/stage -maxdepth 1 -mindepth 1 -exec mv {} /home/\$XUSER \;
-sudo chown \$XUID:\$XGID /home/\$XUSER
-[ -d /home/\$XUSER/src ] && cd /home/\$XUSER/src
-exec sudo -H -u \$XUSER bash
-EOF
 }
 
 get-script-dir()
@@ -111,18 +84,11 @@ done
 
 PROJ_DIR="${1:-}"
 if [ -n "${PROJ_DIR}" ] ; then
-    PROJ_DIR=$(readlink -f "${PROJ_DIR}")
+    PROJ_DIR="$(cd "$(dirname "${PROJ_DIR}")" && pwd -P)"
     if [ ! -d "${PROJ_DIR}" ] ; then
         abort "Specified project directory '${PROJ_DIR}' does not exist."
     fi
 fi
-
-ENTRY_POINT_FILE=$(mktemp)
-check-err "Could not create temporary file in which to write entry point script"
-gen-entry-point-file > "${ENTRY_POINT_FILE}"
-check-err "Could not write entry point script contents"
-chmod 755 "${ENTRY_POINT_FILE}"
-check-err "Could not chmod 755 entry point script"
 
 MAP_REPO_DIR_OPT=
 if running-in-repo ; then
@@ -152,12 +118,12 @@ if [ -n "${PROJ_DIR}" ] ; then
 fi
 
 "${DOCKER}" run -it --rm \
-    -v "${ENTRY_POINT_FILE}":/dev-shell-init \
+    -v "${ENTRY_POINT_DIR}":/entry \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
     ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest \
-    /dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
+    /entry/dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
 
 check-err "Failed to run docker image."
 
