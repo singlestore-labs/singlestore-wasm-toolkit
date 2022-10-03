@@ -56,7 +56,6 @@ RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
     && git clone --depth 1 https://github.com/singlestore-labs/writ.git        \
     && mkdir -p bin                                                            \
     && cd bin                                                                  \
-    && ln -s ../writ/bin/writ writ                                             \
     && cd ..                                                                   \
     \
     && cargo cache -r all
@@ -68,5 +67,6 @@ RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
     && echo "set mouse=r" >> ~/.vimrc                                          \
     && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
         >> ~/.bashrc                                                           \
-    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc                         \
+    && echo 'alias writ=$HOME/writ/bin/writ' >> ~/.bashrc
 
