@@ -26,7 +26,13 @@ XGROUP=\$4
 
 sudo groupadd --gid \$XGID \$XGROUP
 sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --groups $STAGE_GID --shell /bin/bash \$XUSER
-sudo find /home/stage -maxdepth 1 -mindepth 1 -exec mv {} /home/\$XUSER \;
+
+sudo find /home/stage -maxdepth 1 -mindepth 1 | while read F ; do
+    TARGET=/home/\$XUSER/\`basename "\$F"\`
+    sudo ln -s "\$F" "\$TARGET" && \
+        sudo chown -h \$XUID:\$XGID "\$TARGET"
+done
+
 sudo chown \$XUID:\$XGID /home/\$XUSER
 [ -d /home/\$XUSER/src ] && cd /home/\$XUSER/src
 exec sudo -H -u \$XUSER bash
