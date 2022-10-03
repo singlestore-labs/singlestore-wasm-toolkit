@@ -117,7 +117,7 @@ if [ -n "${PROJ_DIR}" ] ; then
     SET_WORK_DIR_OPT="-w /home/$USER/src"
 fi
 
-"${DOCKER}" run -it --rm \
+"${DOCKER}" run --pull always -it --rm \
     -v "${ENTRY_POINT_DIR}":/entry \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \

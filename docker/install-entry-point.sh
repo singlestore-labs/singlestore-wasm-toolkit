@@ -24,7 +24,7 @@ XGID=\$2
 XUSER=\$3
 XGROUP=\$4
 
-sudo groupadd --gid \$XGID \$XGROUP
+sudo groupadd -f --gid \$XGID \$XGROUP
 sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --groups $STAGE_GID --shell /bin/bash \$XUSER
 
 sudo find /home/stage -maxdepth 1 -mindepth 1 | while read F ; do
