@@ -66,10 +66,14 @@ running-in-repo()
 # Main ########################################################################
 
 REBUILD=0
+PULL=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
             usage
+            ;;
+        --pull)
+            PULL=1
             ;;
         --rebuild)
             REBUILD=1
@@ -117,7 +121,12 @@ if [ -n "${PROJ_DIR}" ] ; then
     SET_WORK_DIR_OPT="-w /home/$USER/src"
 fi
 
-"${DOCKER}" run --pull always -it --rm \
+PULL_OPT=
+if [ $PULL -eq 1 ] ; then
+    PULL_OPT="--pull always"
+fi
+
+"${DOCKER}" run ${PULL_OPT} -it --rm \
     -v "${ENTRY_POINT_DIR}":/entry \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
