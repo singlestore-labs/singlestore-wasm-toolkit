@@ -25,7 +25,8 @@ RUN apt-get update                                                             \
 COPY docker/*.sh /tmp/library-scripts/
 RUN bash /tmp/library-scripts/install-wasi-sdk.sh
 RUN bash /tmp/library-scripts/install-wasmtime.sh
-RUN bash /tmp/library-scripts/install-entry-point.sh
+RUN bash /tmp/library-scripts/install-entry-point.sh $GID
+RUN chown -R $USER:$GID /home/$USER
 
 # Now switch to the user staging account and install the rest.
 #
@@ -63,5 +64,6 @@ RUN git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git       \
 RUN echo "set mouse=r" >> ~/.vimrc                                             \
     && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
         >> ~/.bashrc                                                           \
-    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc                         \
+    && chmod -R g+rw /home/$USER
 

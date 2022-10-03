@@ -1,5 +1,8 @@
 #!/bin/sh
 
+[ $# -ne 1 ]  && echo "Usage: $0 GID" && exit 1
+STAGE_GID=$1
+
 # Generates content for the dev container's entry point.
 gen-entry-point-file()
 {
@@ -22,8 +25,7 @@ XUSER=\$3
 XGROUP=\$4
 
 sudo groupadd --gid \$XGID \$XGROUP
-sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --shell /bin/bash \$XUSER
-sudo chown -R \$XUID:\$XGID /home/stage
+sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --groups $STAGE_GID --shell /bin/bash \$XUSER
 sudo find /home/stage -maxdepth 1 -mindepth 1 -exec mv {} /home/\$XUSER \;
 sudo chown \$XUID:\$XGID /home/\$XUSER
 [ -d /home/\$XUSER/src ] && cd /home/\$XUSER/src
