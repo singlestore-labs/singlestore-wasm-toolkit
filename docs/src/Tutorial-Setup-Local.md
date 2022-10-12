@@ -16,6 +16,10 @@ If you do not wish to use a development container and/or you’d prefer to set u
 
   - `cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli`
 
+- Download and install the cargo-wasi plugin:
+
+  - `cargo install cargo-wasi`
+
 - *(Optional)* If you would like to use the testing tool [`writ`](https://github.com/singlestore-labs/writ) and the deployment tool [`pushwasm`](https://github.com/singlestore-labs/pushwasm), please follow the installation instructions in their respective repositories and ensure they are in your `$PATH`.
 
 Next, let's pick an [example](Tutorial-Examples.md) to work through.
