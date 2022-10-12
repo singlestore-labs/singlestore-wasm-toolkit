@@ -22,5 +22,7 @@ If you do not wish to use a development container and/or you’d prefer to set u
 
 - *(Optional)* If you would like to use the testing tool [`writ`](https://github.com/singlestore-labs/writ) and the deployment tool [`pushwasm`](https://github.com/singlestore-labs/pushwasm), please follow the installation instructions in their respective repositories and ensure they are in your `$PATH`.
 
+For a more detailed walkthrough on setting up for local development, also consider checking out David Lee's blog entry [here](https://www.singlestore.com/blog/locally-create-wsm-udfs-rust-singlestoredb).
+
 Next, let's pick an [example](Tutorial-Examples.md) to work through.
 
