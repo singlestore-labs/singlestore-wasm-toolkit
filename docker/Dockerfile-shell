@@ -68,5 +68,6 @@ RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
     && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
         >> ~/.bashrc                                                           \
     && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc                         \
-    && echo 'alias writ=$HOME/writ/bin/writ' >> ~/.bashrc
+    && echo 'alias writ=$HOME/writ/bin/writ' >> ~/.bashrc                      \
+    && echo 'alias writ-gdb="gdb --args /usr/bin/python3 $HOME/writ/bin/../src/writ"' >> ~/.bashrc
 
