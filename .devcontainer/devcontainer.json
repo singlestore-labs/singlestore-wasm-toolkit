@@ -39,7 +39,7 @@
     "rust-lang.rust-analyzer",
     "tamasfe.even-better-toml",
     "serayuzgur.crates"
-  ],
+  ]
 
   // Uncomment the below lines to add custom mount points to the container.
   //
