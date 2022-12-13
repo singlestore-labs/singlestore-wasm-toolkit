@@ -13,16 +13,8 @@ cargo wasi build --lib
 ## Testing with Writ
 
 ```sh
-TODO: change this for regex
-writ --wit sentimentable.wit target/wasm32-wasi/debug/sentimentable.wasm sentimentable 'Wasm is an exciting new technology that we love.'
+writ --wit s2regex.wit target/wasm32-wasi/debug/s2regex.wasm capture "aabaaabbb" "(b{2,})"
 
-[
-  {
-    "compound": 0.812604508328942,
-    "positive": 0.513888888888889,
-    "negative": 0.0,
-    "neutral": 0.4861111111111111
-  }
-]
+"bbb"
 ```
 
