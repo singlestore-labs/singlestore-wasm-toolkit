@@ -1,5 +1,5 @@
 [package]
-name = "heapregex"
+name = "s2regex"
 version = "0.1.0"
 edition = "2021"
 

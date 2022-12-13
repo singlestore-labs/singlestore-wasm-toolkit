@@ -1,4 +1,4 @@
-MODULE := sentimentable
+MODULE := s2regex
 
 .PHONY: debug
 debug: $(eval TGT:=debug)
@@ -16,14 +16,19 @@ wasm:
 .PHONY: test
 test: debug
 	writ \
-	    -e '[{"compound": 0.5573704017131537, "positive": 0.5454545454545455, "negative": 0.0, "neutral": 0.4545454545454546 }]' \
-            --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm sentimentable\
-            "it is a fantastic day"
+		--expect '' \
+		--wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm capture \
+		"empty" "empty"
 	@echo PASS
 	writ \
-	    -e '[{"compound": -0.5423261445466404, "positive": 0.0, "negative": 0.5384615384615384, "neutral": 0.46153846153846156 }]' \
-            --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm sentimentable\
-            "it is a bad day"
+		--expect b \
+		--wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm capture \
+		"aabaaabbb" "(b+)"
+	@echo PASS
+	writ \
+		--expect bbb \
+		--wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm capture \
+		"aabaaabbb" "(b{2,})"
 	@echo PASS
 
 .PHONY: clean
