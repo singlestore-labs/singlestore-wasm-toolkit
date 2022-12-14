@@ -11,23 +11,16 @@ thread_local! {
 
 impl s2regex::S2regex for S2regex {
     fn capture(input: String, pattern: String) -> String {
-        if !COMPILED_RGXS.with(|c| c.borrow().contains_key(&input)) {
-            let re = Regex::new(pattern.as_str()).unwrap();
-            COMPILED_RGXS.with(|c| c.borrow_mut().insert(pattern.clone(), re));
-        }
         COMPILED_RGXS.with(|c| {
-            let rgx_map = c.borrow();
-            let re = rgx_map.get(pattern.as_str()).unwrap();
-            match re.captures(&input) {
-                Some(caps) => {
-                    if caps.len() > 1 {
-                        return caps[1].to_string();
-                    }
-                    return "".to_string();
-                }
-                None => "".to_string(),
-            }
+            let mut map = c.borrow_mut();
+            let re = map
+                .entry(pattern)
+                .or_insert_with_key(|pattern| Regex::new(pattern).unwrap());
+            re.captures(&input)
+                .and_then(|c| c.get(1))
+                .map(|c| c.as_str())
+                .unwrap_or_default()
+                .to_string()
         })
     }
 }
-
