@@ -18,6 +18,13 @@ Calculate X to the power of Y.
 
 [code](./power/)
 
+## Regex
+
+Capture the first match of a regular expression. This examples demonstrates using thread-local storage to retain state between
+multiple invocations of a UDF.
+
+[code](./regex/)
+
 ## Echo
 
 Echo an input phrase twice.  This example demonstrates using the remote debugging tool.
