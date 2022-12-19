@@ -32,7 +32,8 @@ cpp:
 rust-debug: rust
 
 .PHONY: rust-release
-rust-release: REL_FLAGS = --release
+rust-release: TARGET=release
+rust-release: rust
 
 .PHONY: rust
 rust:
