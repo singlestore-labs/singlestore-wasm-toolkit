@@ -1,4 +1,4 @@
-// This is a testing driver for the module
+// Generate json testing input / output for make test
 use rustfft::{FftPlanner};
 use num_complex::{Complex64};
 use serde::{Deserialize, Serialize};
