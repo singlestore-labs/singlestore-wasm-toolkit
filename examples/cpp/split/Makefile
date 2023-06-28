@@ -17,7 +17,7 @@ split.wasm: gen
 	    split_impl.cpp
 
 .PHONY: test
-test: debug
+test:
 	writ \
 	    -e '[{"str": "hello", "idx": 0}, {"str": "there", "idx": 6}, {"str": "people", "idx": 12}]' \
             --wit split.wit split.wasm split-str "hello there people" " "

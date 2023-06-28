@@ -4,10 +4,13 @@ on:
   push:
     paths:
       - '**.md'
+      - '**.html'
     branches:
       - main
   pull_request:
-
+    paths:
+      - '**.md'
+      - '**.html'
 jobs:
   deploy:
     runs-on: ubuntu-latest

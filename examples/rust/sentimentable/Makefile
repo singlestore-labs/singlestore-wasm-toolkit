@@ -14,7 +14,7 @@ wasm:
 	cargo wasi build --lib $(RELFLAGS)
 
 .PHONY: test
-test: debug
+test:
 	writ \
 	    -e '[{"compound": 0.5573704017131537, "positive": 0.5454545454545455, "negative": 0.0, "neutral": 0.4545454545454546 }]' \
             --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm sentimentable\

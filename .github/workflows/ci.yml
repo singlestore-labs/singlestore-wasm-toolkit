@@ -2,9 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '**.html'
   pull_request:
-    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '**.html'
 
 # Cancel any in-flight jobs for the same PR/branch so there's only one active at a time
 concurrency:
@@ -17,6 +23,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - run: pip install mypy wasmtime
+
+    - uses: actions/checkout@v3
+      with:
+        repository: singlestore-labs/writ
+        path: writ
+    - run: |
+        echo "$GITHUB_WORKSPACE/writ/bin" >> $GITHUB_PATH
+        chmod +x $GITHUB_WORKSPACE/writ/bin/writ
 
     - uses: actions-rs/toolchain@v1
       with:
@@ -35,11 +54,6 @@ jobs:
     - run: |
         curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf - -C $GITHUB_WORKSPACE/
         echo "$GITHUB_WORKSPACE/wasi-sdk-16.0/bin" >> $GITHUB_PATH
-
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - run: pip install mypy wasmtime
 
     - name: Test cpp build
       run: make cpp-debug cpp-release

@@ -16,7 +16,7 @@ wasm:
 # This function produces random output, so we can't check it against a
 # standard.  Instead, just verify that it runs without error.
 .PHONY: test
-test: debug
+test:
 	writ --wit $(MODULE).wit target/wasm32-wasi/debug/$(MODULE).wasm gen-users 3
 	@echo PASS
 
