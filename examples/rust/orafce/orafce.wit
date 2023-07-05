@@ -1,0 +1,20 @@
+add-months: func(date: string, num: u32) -> string
+last-day: func(date: string) -> string
+next-day: func(date: string, weekday: string) -> string
+next-day-by-index: func(date: string, weekday: s32) -> string
+months-between: func(date1: string, date2: string) -> float32
+ora-date-trunc: func(date: string, format: string) -> string
+ora-date-round: func(date: string, format: string) -> string
+to-date: func(text: string) -> string
+oracle-add-months: func(timestamp: string, num: u32) -> string
+oracle-last-day: func(timestamp: string) -> string
+oracle-next-day-by-index: func(timestamp: string, weekday: s32) -> string
+oracle-next-day: func(timestamp: string, weekday: string) -> string
+oracle-months-between: func(timestamp: string, timestamp: string) -> float32
+oracle-custom-to-date: func(timestamp: string, fromfmt: string) -> string
+oracle-to-date: func(timestamp: string) -> string
+oracle-sysdate: func() -> string
+oracle-to-char: func(timestamp: string) -> string
+oracle-add-days: func(timestamp: string, num: s32) -> string
+oracle-sub-days: func(timestamp: string, num: s32) -> string
+oracle-difference-between-days: func(timestamp1: string, timestamp2: string) -> float64
