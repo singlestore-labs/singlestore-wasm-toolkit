@@ -1,0 +1,2 @@
+vector-pow-f64: func(packed: list<u8>, n: float64) -> list<u8>
+
