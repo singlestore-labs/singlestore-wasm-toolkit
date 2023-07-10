@@ -1,20 +1,63 @@
-add-months: func(date: string, num: u32) -> string
-last-day: func(date: string) -> string
-next-day: func(date: string, weekday: string) -> string
-next-day-by-index: func(date: string, weekday: s32) -> string
-months-between: func(date1: string, date2: string) -> float32
-ora-date-trunc: func(date: string, format: string) -> string
-ora-date-round: func(date: string, format: string) -> string
-to-date: func(text: string) -> string
-oracle-add-months: func(timestamp: string, num: u32) -> string
-oracle-last-day: func(timestamp: string) -> string
-oracle-next-day-by-index: func(timestamp: string, weekday: s32) -> string
-oracle-next-day: func(timestamp: string, weekday: string) -> string
-oracle-months-between: func(timestamp: string, timestamp: string) -> float32
-oracle-custom-to-date: func(timestamp: string, fromfmt: string) -> string
-oracle-to-date: func(timestamp: string) -> string
-oracle-sysdate: func() -> string
-oracle-to-char: func(timestamp: string) -> string
-oracle-add-days: func(timestamp: string, num: s32) -> string
-oracle-sub-days: func(timestamp: string, num: s32) -> string
-oracle-difference-between-days: func(timestamp1: string, timestamp2: string) -> float64
+tsz-from-fmt-get-date: func(ts: string, fmt: string) -> string
+tsz-from-fmt-get-time: func(ts: string, fmt: string) -> string
+tsz-from-fmt-timestamp: func(ts: string, fmt: string) -> s64
+tsz-from-fmt-timestamp-millis: func(ts: string, fmt: string) -> s64
+tsz-from-fmt-timestamp-micros: func(ts: string, fmt: string) -> s64
+tsz-from-fmt-timestamp-nanos: func(ts: string, fmt: string) -> s64
+tsz-from-fmt-timestamp-subsec-millis: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-timestamp-subsec-micros: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-timestamp-subsec-nanos: func(ts: string, fmt: string) -> u32
+
+tsz-from-fmt-add-months: func(ts: string, fmt: string, months: s32) -> string
+tsz-from-fmt-add-weeks: func(ts: string, fmt: string, weeks: s64) -> string
+tsz-from-fmt-add-days: func(ts: string, fmt: string, days: s64) -> string
+tsz-from-fmt-add-hours: func(ts: string, fmt: string, hours: s64) -> string
+tsz-from-fmt-add-minutes: func(ts: string, fmt: string, minutes: s64) -> string
+tsz-from-fmt-add-seconds: func(ts: string, fmt: string, seconds: s64) -> string
+tsz-from-fmt-add-milliseconds: func(ts: string, fmt: string, milliseconds: s64) -> string
+tsz-from-fmt-add-microseconds: func(ts: string, fmt: string, microseconds: s64) -> string
+tsz-from-fmt-add-nanoseconds: func(ts: string, fmt: string, nanoseconds: s64) -> string
+
+tsz-from-fmt-years-since: func(ts: string, origints: string, fmt: string) -> u32
+tsz-from-fmt-weeks-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-days-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-hours-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-minutes-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-seconds-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-milliseconds-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-microseconds-since: func(ts: string, origints: string, fmt: string) -> s64
+tsz-from-fmt-nanoseconds-since: func(ts: string, origints: string, fmt: string) -> s64
+
+tsz-from-fmt-to-utc: func(ts: string, fmt: string) -> string
+
+tsz-from-fmt-get-year: func(ts: string, fmt: string) -> s32
+tsz-from-fmt-get-month: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-get-day: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-get-ordinal: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-get-weekday: func(ts: string, fmt: string) -> u32
+tsz-from-fmt-get-isoweek: func(ts: string, fmt: string) -> u32
+
+tsz-from-fmt-change-year: func(ts: string, fmt: string, year: s32) -> string
+tsz-from-fmt-change-month: func(ts: string, fmt: string, month: u32) -> string
+tsz-from-fmt-change-day: func(ts: string, fmt: string, day: u32) -> string
+tsz-from-fmt-change-ordinal: func(ts: string, fmt: string, day: u32) -> string
+tsz-from-fmt-change-hour: func(ts: string, fmt: string, day: u32) -> string
+tsz-from-fmt-change-minute: func(ts: string, fmt: string, day: u32) -> string
+tsz-from-fmt-change-second: func(ts: string, fmt: string, day: u32) -> string
+tsz-from-fmt-change-nanosecond: func(ts: string, fmt: string, day: u32) -> string
+
+tsz-from-fmt-round-by-week: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-day: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-hour: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-minute: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-second: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-millisecond: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-round-by-microsecond: func(ts: string, fmt: string, week: s64) -> string
+
+tsz-from-fmt-trunc-by-week: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-day: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-hour: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-minute: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-second: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-millisecond: func(ts: string, fmt: string, week: s64) -> string
+tsz-from-fmt-trunc-by-microsecond: func(ts: string, fmt: string, week: s64) -> string
