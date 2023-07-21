@@ -14,7 +14,7 @@ RUN apt-get update                                                             \
         git lldb gdb curl clang xz-utils sudo make vim pip mariadb-client      \
         pkg-config openssl libssl-dev libxml2-dev                              \
     && apt-get clean && rm -rf /var/lib/apt/lists/*                            \
-    && pip --no-cache-dir install wasmtime                                     \
+    && pip --no-cache-dir install wasmtime==1.01                               \
     \
     && groupadd --gid $GID $USER                                               \
     && useradd -l --create-home --uid $UID --gid $GID --shell /bin/bash $USER  \
