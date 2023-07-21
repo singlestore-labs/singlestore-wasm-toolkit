@@ -47,7 +47,7 @@ WORKDIR /home/vscode
 
 # Setup python deps and configure rust.
 #
-RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime==1.01      \
+RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime==0.37.0      \
     && rm -rf /tmp/pip-tmp                                                     \
     && bash /tmp/library-scripts/install-rust-tools.sh                         \
     && bash /tmp/library-scripts/install-wit-bindgen.sh
@@ -63,8 +63,6 @@ RUN git clone https://github.com/singlestore-labs/pushwasm.git                 \
     && rm -rf pushwasm                                                         \
     \
     && git clone https://github.com/singlestore-labs/writ.git                  \
-    && mkdir -p bin                                                            \
-    && cd bin                                                                  \
-    && ln -s ../writ/bin/writ writ                                             \
-    && cd ..                                                                   \
     && cargo cache -r all
+
+RUN echo 'export PATH=$PATH:/home/vscode/writ/bin' >> /home/vscode/.profile

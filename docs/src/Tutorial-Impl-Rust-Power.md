@@ -1,8 +1,24 @@
-# Developing a Simple Example in Rust
+<!-- GENERATED FILE; DO NOT CHANGE! -->
 
-## Initialize Your Source Tree
+# Developing the `power-of` example in Rust
 
-From within a new work directory, run `cargo init --vcs none --lib`. This will set up a skeletal Rust source tree.
+## Initialize Your Source Tree                                                   
+
+To setup our project, we'll need to do a few things:
+
+1. Ensure that you are in a new directory.  It can be called anything you want.
+
+1. In the work directory, run the following to set up a skeltal Rust source tree:
+   ```
+   cargo init --vcs none --lib
+   ```
+                                                                                 
+1. Now, create a special configuration file to tell utilities like the *rust-analyzer* that the default build target of this project is Wasm.  Run this command:
+   ```bash                                                                          
+   mkdir .cargo && echo -e "[build]\ntarget = \"wasm32-wasi\"\n" > .cargo/config.toml   
+   ```                                                                              
+
+## Copy the WIT File
 
 We’ll need the `power.wit` file we created [earlier](Tutorial-WIT-Power.md). Copy it into this directory if it is not already there.
 

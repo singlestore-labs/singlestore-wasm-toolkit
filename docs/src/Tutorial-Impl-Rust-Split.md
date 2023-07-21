@@ -1,12 +1,28 @@
-# Developing a More Complex UDF in Rust
+<!-- GENERATED FILE; DO NOT CHANGE! -->
 
-# Initialize Your Source Tree
+# Developing the `split-str` example in Rust
 
-Start by creating a new work directory and initializing it using `cargo init --vcs none --lib`.
+## Initialize Your Source Tree                                                   
+
+To setup our project, we'll need to do a few things:
+
+1. Ensure that you are in a new directory.  It can be called anything you want.
+
+1. In the work directory, run the following to set up a skeltal Rust source tree:
+   ```
+   cargo init --vcs none --lib
+   ```
+                                                                                 
+1. Now, create a special configuration file to tell utilities like the *rust-analyzer* that the default build target of this project is Wasm.  Run this command:
+   ```bash                                                                          
+   mkdir .cargo && echo -e "[build]\ntarget = \"wasm32-wasi\"\n" > .cargo/config.toml   
+   ```                                                                              
+
+## Copy the WIT File
 
 We'll need the `split.wit` file we created [earlier](Tutorial-WIT-Split.md).  Copy it into this directory if it is not already there.
 
-### Implementing and Compiling
+## Implementing and Compiling
 
 Much of this will be similar to the techniques we used in the [`power-of` example](Tutorial-Impl-Rust-Power.md).
 
@@ -42,7 +58,7 @@ impl split::Split for Split {
                     str: s.to_string(),
                     idx: *idx as i32
                 };
-                *idx += (s.len() + delim.len()) as i32;
+                *idx += (s.0 + delim.0) as i32;
                 Some(current)
             })
             .collect()

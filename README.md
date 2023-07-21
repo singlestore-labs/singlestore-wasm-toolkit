@@ -1,10 +1,12 @@
-# SingleStore Wasm Toolkit And Examples
+# SingleStore Wasm Toolkit, Tutorial, And Examples
 
-This repository provides utilities intended to help you streamline development of Wasm UDFs for SingleStoreDB.  It consists of development containers, documentation, and a collection of example Wasm programs.
+This repository provides utilities and documentation intended to help you streamline development of Wasm UDFs and TVFs for SingleStoreDB.  It consists of development containers, a tutorial, and a collection of example Wasm programs.
 
-To use the tools in this repo, you will need to have Docker installed on your system.  Most of these tools can be installed locally as well.
+This README describes the technical details on how to get started using this toolkit.  Please also check out our [tutorial](https://singlestore-labs.github.io/singlestore-wasm-toolkit/html/Tutorial-Overview.html), which is great place to start once you are ready to write your first function, and will walk you through specific examples.
 
 # Tools
+
+To use the tools in this repo, you will need to have Docker installed on your system.  Most of these tools can be installed locally as well.
 
 In this repo, you will find two development containers -- one standalone and one designed specifically for VS Code.  These containers attempt to strike a balance between providing a fairly comprehensive set of Wasm-oriented development tools, while still being mindful of image sizes.  Still, the container sizes currently range between 2-3 GB.
 
@@ -32,7 +34,7 @@ A language binding generator for the WIT IDL.
 A utility to help test Wasm functions locally without the need to create a separate driver program.  Please see its dedicated [Git Repository](https://github.com/singlestore-labs/writ) for more information.
 
 ## [pushwasm](https://github.com/singlestore-labs/pushwasm)
-A utility that allows you to easily import your locally-built Wasm function into SingleStoreDB as a UDF.  Please see its dedicated [Git Repository](https://github.com/singlestore-labs/pushwasm) for more information.
+A utility that allows you to easily import your locally-built Wasm function into SingleStoreDB as a UDF or TVF.  Please see its dedicated [Git Repository](https://github.com/singlestore-labs/pushwasm) for more information.
 
 ## Remote Debugging Tool (VS Code Only)
 The VS Code container includes an experimental remote debugging tool that can be run as an external function from SingleStoreDB.  For instructions on how to use this utility, please see [this document](https://github.com/singlestore-labs/singlestore-wasm-toolkit/blob/main/crates/debugger/README.md).
@@ -41,7 +43,7 @@ The VS Code container includes an experimental remote debugging tool that can be
 Finally, both containers give you access to password-less `sudo` so that you can further customize instances of them if you prefer.
 
 # Suggested Workflow
-This section suggests a possible workflow for developing a Wasm UDF for use in SingleStoreDB.
+This section suggests a possible workflow for developing a Wasm UDF or TVF for use in SingleStoreDB.
  
 Before you start, you'll need to clone this repository.  For the purposes of example, we'll assume you are cloning to `$HOME/singlestore-wasm-toolkit`.
 ```sh
@@ -102,7 +104,7 @@ For both container types, iterative development proceeds the same.  We'll use th
 
 1. To start:
     1. In the container, ensure that you are in the root directory of the code you intend to compile.  For our demonstration, we will be in `~/src/examples/rust/split`.
-    1. Ensure that you have created a WIT file to describe the common interface of your Wasm function and UDF.  The WIT syntax is described [here](https://github.com/bytecodealliance/wit-bindgen/blob/main/WIT.md).  For the `split` example, we have placed this file at the root of the example's source tree.
+    1. Ensure that you have created a WIT file to describe the common interface of your Wasm function and UDF/TVF.  The WIT syntax is described [here](https://github.com/bytecodealliance/wit-bindgen/blob/main/WIT.md).  For the `split` example, we have placed this file at the root of the example's source tree.
 
 1. Compile your program using the appropriate compiler.  Clang/GCC and Rust are both available in the container.  The process of compiling is described in more detail for C/C++ [here](https://github.com/singlestore-labs/singlestore-wasm-toolkit/blob/main/docs/Tutorial-Developing-Wasm-UDF-CPP.md), and for Rust [here](https://github.com/singlestore-labs/singlestore-wasm-toolkit/blob/main/docs/Tutorial-Developing-Wasm-UDF-Rust.md).
     <br>
@@ -141,7 +143,7 @@ For both container types, iterative development proceeds the same.  We'll use th
     <br>
     ```console
     % pushwasm --tvf --prompt mysql://admin@svc-0e3c0e37-dml.singlestore.com:3306/testing --wit split.wit target/wasm32-wasi/release/split.wasm split_str
-    Wasm UDF 'split_str' was created successfully.
+    Wasm TVF 'split_str' was created successfully.
     ```
 
 1. The last step is verify that the Wasm UDF or TVF works in your database.  Using the SQL Editor in the SingleStore Customer Portal, you can check that the function has been created using the `SHOW FUNCTIONS` statement.  Then, you might try running using your UDF or TVF on a table.  Here's an example using the `split` TVF:

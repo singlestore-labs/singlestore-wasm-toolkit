@@ -1,11 +1,23 @@
 #!/usr/bin/env bash
 set -eu
 
+ENTRY_POINT_FILE=
+ENTRY_POINT_DIR=
+
 DOCKER=$(command -v docker)
 if [ -z "${DOCKER}" ] ; then
     echo "Docker was not found in your PATH.  Aborting."
     exit 1
 fi
+
+cleanup()
+{
+    if [ -n "$ENTRY_POINT_DIR" ] ; then
+        rm -f "$ENTRY_POINT_FILE"
+        rmdir "$ENTRY_POINT_DIR"
+    fi
+}
+trap "cleanup" EXIT
 
 usage()
 {
@@ -21,11 +33,47 @@ EOF
     exit 1
 }
 
+abort()
+{
+    MSG="$1"
+    echo "ERROR: $MSG"
+    exit 1
+}
+
+check-err()
+{
+    CODE=$?
+    MSG="$1"
+    if [ $CODE -ne 0 ] ; then
+        abort "$MSG"
+    fi
+}
+
+get-script-dir()
+{
+    SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+    echo $SCRIPT_DIR
+}
+
+# Returns 0 if the script is running from inside the singlestore-wasm-toolkit 
+# repository.
+running-in-repo()
+{
+    SCRIPT_DIR=$(get-script-dir)
+    [ -f "$SCRIPT_DIR/../docker/Dockerfile-shell" ]
+}
+
+# Main ########################################################################
+
 REBUILD=0
+PULL=0
 while [ $# -gt 0 ] ; do
     case "$1" in
         -h|--help)
             usage
+            ;;
+        --pull)
+            PULL=1
             ;;
         --rebuild)
             REBUILD=1
@@ -40,23 +88,30 @@ done
 
 PROJ_DIR="${1:-}"
 if [ -n "${PROJ_DIR}" ] ; then
-    PROJ_DIR=$(readlink -f "${PROJ_DIR}")
+    PROJ_DIR="$(cd "${PROJ_DIR}" && pwd -P)"
     if [ ! -d "${PROJ_DIR}" ] ; then
-        echo "ERROR: Specified project directory '${PROJ_DIR}' does not exist."
-        exit 1
+        abort "Specified project directory '${PROJ_DIR}' does not exist."
     fi
 fi
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
-REPO_DIR="$(dirname "${SCRIPT_DIR}")"
-
-if [ $REBUILD -eq 1 ] ; then
-    pushd "${REPO_DIR}" > /dev/null
-    "${DOCKER}" build \
-        -f "docker/Dockerfile-shell" \
-        -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
-        .
-    popd > /dev/null
+MAP_REPO_DIR_OPT=
+if running-in-repo ; then
+    SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+    REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+    if [ $REBUILD = 1 ] ; then
+        pushd "${REPO_DIR}" > /dev/null
+        "${DOCKER}" build \
+            -f "docker/Dockerfile-shell" \
+            -t "ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest" \
+            .
+        check-err "Failed to build new docker image."
+        popd > /dev/null
+    fi
+    MAP_REPO_DIR_OPT="-v ${REPO_DIR}:/opt/singlestore-wasm-toolkit"
+else
+    if [ $REBUILD = 1 ] ; then
+        abort "Cannot rebuild image unless running from repository."
+    fi
 fi
 
 MAP_PROJ_DIR_OPT=
@@ -66,11 +121,18 @@ if [ -n "${PROJ_DIR}" ] ; then
     SET_WORK_DIR_OPT="-w /home/$USER/src"
 fi
 
-"${DOCKER}" run -it --rm \
-    -v "${REPO_DIR}"/scripts/dev-shell-init:/dev-shell-init \
-    -v "${REPO_DIR}":/opt/singlestore-wasm-toolkit \
+PULL_OPT=
+if [ $PULL -eq 1 ] ; then
+    PULL_OPT="--pull always"
+fi
+
+"${DOCKER}" run ${PULL_OPT} -it --rm \
+    -v "${ENTRY_POINT_DIR}":/entry \
+    ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
     ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest \
-    /dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
+    /entry/dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
+
+check-err "Failed to run docker image."
 

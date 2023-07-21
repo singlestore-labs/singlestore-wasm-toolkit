@@ -14,7 +14,7 @@ RUN apt-get update                                                             \
         git lldb gdb curl clang xz-utils sudo make vim pip mariadb-client      \
         pkg-config openssl libssl-dev libxml2-dev                              \
     && apt-get clean && rm -rf /var/lib/apt/lists/*                            \
-    && pip --no-cache-dir install wasmtime==1.01                               \
+    && pip --no-cache-dir install wasmtime==0.37.0                             \
     \
     && groupadd --gid $GID $USER                                               \
     && useradd -l --create-home --uid $UID --gid $GID --shell /bin/bash $USER  \
@@ -25,6 +25,8 @@ RUN apt-get update                                                             \
 COPY docker/*.sh /tmp/library-scripts/
 RUN bash /tmp/library-scripts/install-wasi-sdk.sh
 RUN bash /tmp/library-scripts/install-wasmtime.sh
+RUN bash /tmp/library-scripts/install-entry-point.sh $GID
+RUN chown -R $USER:$GID /home/$USER
 
 # Now switch to the user staging account and install the rest.
 #
@@ -34,14 +36,16 @@ ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
 
 # Install the Rust toolchain, targets, useful components, tools, and wit-bindgen.
 #
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y    \
+RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && bash /tmp/library-scripts/install-rust-tools.sh                         \
     && bash /tmp/library-scripts/install-wit-bindgen.sh
 
 # Clone and build SingleStore tools -- `pushwasm` and `writ`.
 # Make sure to clean up the cargo cache when we're done.
 #
-RUN git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git       \
+RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
+    && git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git    \
     && mkdir -p bin                                                            \
     && cd pushwasm                                                             \
     && cargo build --release                                                   \
@@ -52,15 +56,18 @@ RUN git clone --depth 1 https://github.com/singlestore-labs/pushwasm.git       \
     && git clone --depth 1 https://github.com/singlestore-labs/writ.git        \
     && mkdir -p bin                                                            \
     && cd bin                                                                  \
-    && ln -s ../writ/bin/writ writ                                             \
     && cd ..                                                                   \
     \
     && cargo cache -r all
 
 # Hacks and stuff.
 #
-RUN echo "set mouse=r" >> ~/.vimrc                                             \
+RUN umask u=rw,u+x,g=rw,g+x,o=r,o+x                                            \
+    && chmod g+w $HOME/.bash_logout $HOME/.bashrc $HOME/.profile               \
+    && echo "set mouse=r" >> ~/.vimrc                                          \
     && echo 'export PS1="\[\033[0;34m\][\[\033[1;34m\]dev-shell\[\033[0;34m\]]:\[\033[0;35m\]\w\[\033[1;35m\] % \[\033[0m\]"' \
         >> ~/.bashrc                                                           \
-    && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+    && echo 'export PATH=$PATH:$HOME/bin:$HOME/writ/bin' >> ~/.bashrc          \
+    && echo 'alias writ=$HOME/writ/bin/writ' >> ~/.bashrc                      \
+    && echo 'alias writ-gdb="gdb --args /usr/bin/python3 $HOME/writ/bin/../src/writ"' >> ~/.bashrc
 
