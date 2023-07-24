@@ -11,7 +11,3 @@ wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git"
 
 [lib]
 crate-type = ["cdylib"]
-
-[[bin]]
-name = "test"
-path = "test/main.rs"

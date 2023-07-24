@@ -69,29 +69,159 @@ Timestamp string
 ## Usage Example
 
 ## Building
-
-### Compilation
-
-To build this project, you will need to ensure that you have the
-[WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) installed.  Please
-set the environment variable `WASI_SDK_PATH` to its top-level directory.
-
-If you change the `extension.wit` file, you will need to regenerate the ABI
-wrappers.  To do this, make sure you have the wit-bindgen program installed.
-Currently, SingleStoreDB only supports code generated using
-[wit-bindgen v0.2.0](https://github.com/bytecodealliance/wit-bindgen/releases/tag/v0.2.0).
-
-To compile:
 ```
-make release
+# Install the WASI cargo extension.
+cargo install cargo-wasi
+
+# Compile the Wasm module.
+cargo wasi build --release
 ```
 
-### Cleaning
+## Deployment to SingleStoreDB
 
-To remove just the Wasm file:
+To install these functions using the MySQL client, use the following commands.  This command assumes you have built the Wasm module and your current directory is the root of this Git repo.  Replace `$DBUSER`, `$DBHOST`, `$DBPORT`, and `$DBNAME` with, respectively, your database username, hostname, port, and the name of the database where you want to deploy the functions.
+```bash
+cat <<EOF | mysql -u $DBUSER -h $DBHOST -P $DBPORT -D $DBNAME -p
+CREATE FUNCTION unix_timestamp_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+CREATE FUNCTION timestampadd_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+CREATE FUNCTION timestampdiff_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+CREATE FUNCTION convert_to_utc_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+CREATE FUNCTION extract_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+CREATE FUNCTION convert_tz_fmt RETURNS TABLE AS WASM FROM LOCAL INFILE "target/wasm32-wasi/release/tsz.wasm" WITH WIT FROM LOCAL INFILE "tsz.wit";
+```
+
+Alternatively, you can install these functions using [pushwasm](https://github.com/singlestore-labs/pushwasm) with the following command lines.  As above, be sure to substitute the environment variables with values of your own.
+```bash
+pushwasm udf --force --prompt --name unix_timestamp_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+pushwasm udf --force --prompt --name timestampadd_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+pushwasm udf --force --prompt --name timestampdiff_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+pushwasm udf --force --prompt --name convert_to_utc_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+pushwasm udf --force --prompt --name extract_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+pushwasm udf --force --prompt --name convert_tz_fmt \
+    --wasm target/wasm32-wasi/release/tsz.wasm \
+    --wit tsz.wit \
+    --abi canonical \
+    --conn "mysql://$DBUSER@$DBHOST:$DBPORT/$DBNAME"
+```
+
+## Clean
 ```
 make clean
 ```
 
+## Usage
+```sql
+  SELECT unix_timestamp_fmt("nanosecond", "2009-02-13 20:31:30-03:00", "%Y-%m-%d
+ %H:%M:%S%z");
+```
+
+Output:
+```
++----------------------------------------------------------------------------------------+
+| (unix_timestamp_fmt("nanosecond", "2009-02-13 20:31:30-03:00", "%Y-%m-%d %H:%M:%S%z")) |
++----------------------------------------------------------------------------------------+
+|                                                                    1234567890000000000 |
++----------------------------------------------------------------------------------------+
+```
 
 
+```sql
+SELECT convert_tz_fmt("2014-04-18 12:00:00+07:00", "%Y-%m-%d %H:%M:%S%z", "EST", "");
+```
+
+Output
+```
++-------------------------------------------------------------------------------+
+| convert_tz_fmt("2014-04-18 12:00:00+07:00", "%Y-%m-%d %H:%M:%S%z", "EST", "") |
++-------------------------------------------------------------------------------+
+| 2014-04-18 00:00:00-0500                                                      |
++-------------------------------------------------------------------------------+
+```
+
+Note: `%Z` can only be used for formatting
+```sql
+SELECT convert_tz_fmt("2014-04-18 12:00:00+07:00", "%Y-%m-%d %H:%M:%S%z", "EST", "%Y-%m-%d %H-%M-%S %Z");
+```
+
+Output:
+```
++---------------------------------------------------------------------------------------------------+
+| convert_tz_fmt("2014-04-18 12:00:00+07:00", "%Y-%m-%d %H:%M:%S%z", "EST", "%Y-%m-%d %H-%M-%S %Z") |
++---------------------------------------------------------------------------------------------------+
+| 2014-04-18 00-00-00 EST                                                                           |
++---------------------------------------------------------------------------------------------------+
+```
+
+```sql
+SELECT timestampadd_fmt("week", 2, "2023-07-18 12:00:00-0500", "%Y-%m-%d %H:%M:%S%z", "%Y-%m-%
+d %H:%M:%S%.6f%z");
+```
+
+Output:
+```
++-----------------------------------------------------------------------------------------------------------+
+| timestampadd_fmt("week", 2, "2023-07-18 12:00:00-0500", "%Y-%m-%d %H:%M:%S%z", "%Y-%m-%d %H:%M:%S%.6f%z") |
++-----------------------------------------------------------------------------------------------------------+
+| 2023-08-01 12:00:00.000000-0500                                                                           |
++-----------------------------------------------------------------------------------------------------------+
+```
+
+```sql
+SELECT timestampdiff_fmt("second", "2009-02-14 06:17:01+0500", "%Y-%m-%d %H:%M:%S%z", "2009-0
+2-13 20:31:30-0300", "%Y-%m-%d %H:%M:%S%z");
+```
+
+Output:
+```
++-----------------------------------------------------------------------------------------------------------------------------------+
+| timestampdiff_fmt("second", "2009-02-14 06:17:01+0500", "%Y-%m-%d %H:%M:%S%z", "2009-02-13 20:31:30-0300", "%Y-%m-%d %H:%M:%S%z") |
++-----------------------------------------------------------------------------------------------------------------------------------+
+|                                                                                                                             -6331 |
++-----------------------------------------------------------------------------------------------------------------------------------+
+```
+
+```sql
+SELECT extract_fmt("nano",  "2019-03-25 10:15:21.000423986", "%Y-%m-%d %H:%M:%S%.9f");
+```
+
+Output:
+```
++--------------------------------------------------------------------------------+
+| extract_fmt("nano",  "2019-03-25 10:15:21.000423986", "%Y-%m-%d %H:%M:%S%.9f") |
++--------------------------------------------------------------------------------+
+|                                                                         423986 |
++--------------------------------------------------------------------------------+
+```
+
+```sql
+SELECT convert_to_utc_fmt("2014-04-18T12:00:00+05:00", "%+");
+```
+
+Output:
+```
++-------------------------------------------------------+
+| convert_to_utc_fmt("2014-04-18T12:00:00+05:00", "%+") |
++-------------------------------------------------------+
+| 2014-04-18 07:00:00                                   |
++-------------------------------------------------------+
+```

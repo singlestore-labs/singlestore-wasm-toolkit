@@ -123,9 +123,15 @@ fn timestampadd_tz_fmt(unit: String, num: i64, ts: String, fmt: String, res_fmt:
             "hour" => dt.checked_add_signed(Duration::hours(num)),
             "minute" => dt.checked_add_signed(Duration::minutes(num)),
             "second" => dt.checked_add_signed(Duration::seconds(num)),
-            "millisecond" => dt.checked_add_signed(Duration::milliseconds(num)),
-            "microsecond" => dt.checked_add_signed(Duration::microseconds(num)),
-            "nanosecond" => dt.checked_add_signed(Duration::nanoseconds(num)),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                dt.checked_add_signed(Duration::milliseconds(num))
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                dt.checked_add_signed(Duration::microseconds(num))
+            }
+            "nanosecond" | "nano" | "nanos" | "nanoseconds" => {
+                dt.checked_add_signed(Duration::nanoseconds(num))
+            }
             _ => unimplemented!("{} is not implemented!", &unit),
         }
     } else {
@@ -138,9 +144,15 @@ fn timestampadd_tz_fmt(unit: String, num: i64, ts: String, fmt: String, res_fmt:
             "hour" => dt.checked_sub_signed(Duration::hours(-num)),
             "minute" => dt.checked_sub_signed(Duration::minutes(-num)),
             "second" => dt.checked_sub_signed(Duration::seconds(-num)),
-            "millisecond" => dt.checked_sub_signed(Duration::milliseconds(-num)),
-            "microsecond" => dt.checked_sub_signed(Duration::microseconds(-num)),
-            "nanosecond" => dt.checked_sub_signed(Duration::nanoseconds(-num)),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                dt.checked_sub_signed(Duration::milliseconds(-num))
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                dt.checked_sub_signed(Duration::microseconds(-num))
+            }
+            "nanosecond" | "nano" | "nanos" | "nanoseconds" => {
+                dt.checked_sub_signed(Duration::nanoseconds(-num))
+            }
             _ => unimplemented!("{} is not implemented!", &unit),
         }
     };
@@ -165,9 +177,15 @@ fn timestampadd_naive_fmt(
             "hour" => dt.checked_add_signed(Duration::hours(num)),
             "minute" => dt.checked_add_signed(Duration::minutes(num)),
             "second" => dt.checked_add_signed(Duration::seconds(num)),
-            "millisecond" => dt.checked_add_signed(Duration::milliseconds(num)),
-            "microsecond" => dt.checked_add_signed(Duration::microseconds(num)),
-            "nanosecond" => dt.checked_add_signed(Duration::nanoseconds(num)),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                dt.checked_add_signed(Duration::milliseconds(num))
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                dt.checked_add_signed(Duration::microseconds(num))
+            }
+            "nanosecond" | "nano" | "nanos" | "nanoseconds" => {
+                dt.checked_add_signed(Duration::nanoseconds(num))
+            }
             _ => unimplemented!("{} is not implemented!", &unit),
         }
     } else {
@@ -180,9 +198,15 @@ fn timestampadd_naive_fmt(
             "hour" => dt.checked_sub_signed(Duration::hours(-num)),
             "minute" => dt.checked_sub_signed(Duration::minutes(-num)),
             "second" => dt.checked_sub_signed(Duration::seconds(-num)),
-            "millisecond" => dt.checked_sub_signed(Duration::milliseconds(-num)),
-            "microsecond" => dt.checked_sub_signed(Duration::microseconds(-num)),
-            "nanosecond" => dt.checked_sub_signed(Duration::nanoseconds(-num)),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                dt.checked_sub_signed(Duration::milliseconds(-num))
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                dt.checked_sub_signed(Duration::microseconds(-num))
+            }
+            "nanosecond" | "nano" | "nanos" | "nanoseconds" => {
+                dt.checked_sub_signed(Duration::nanoseconds(-num))
+            }
             _ => unimplemented!("{} is not implemented!", &unit),
         }
     };
@@ -232,9 +256,15 @@ fn unix_timestamp_nanos_fmt(ts: &str, fmt: &str) -> i64 {
 impl crate::tsz::Tsz for Tsz {
     fn unix_timestamp_fmt(unit: String, ts: String, fmt: String) -> i64 {
         match unit.to_lowercase().as_str() {
-            "millisecond" | "milli" => unix_timestamp_millis_fmt(ts.as_str(), fmt.as_str()),
-            "microsecond" | "micro" => unix_timestamp_micros_fmt(ts.as_str(), fmt.as_str()),
-            "nanosecond" | "nano" => unix_timestamp_nanos_fmt(ts.as_str(), fmt.as_str()),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                unix_timestamp_millis_fmt(ts.as_str(), fmt.as_str())
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                unix_timestamp_micros_fmt(ts.as_str(), fmt.as_str())
+            }
+            "nanosecond" | "nano" | "nanos" | "nanoseconds" => {
+                unix_timestamp_nanos_fmt(ts.as_str(), fmt.as_str())
+            }
             _ => unix_timestamp_second_fmt(ts.as_str(), fmt.as_str()),
         }
     }
@@ -278,9 +308,15 @@ impl crate::tsz::Tsz for Tsz {
             "hour" => dt2.signed_duration_since(dt1).num_hours(),
             "minute" => dt2.signed_duration_since(dt1).num_minutes(),
             "second" => dt2.signed_duration_since(dt1).num_seconds(),
-            "millisecond" => dt2.signed_duration_since(dt1).num_milliseconds(),
-            "microsecond" => dt2.signed_duration_since(dt1).num_microseconds().unwrap(),
-            "nanosecond" => dt2.signed_duration_since(dt1).num_nanoseconds().unwrap(),
+            "millisecond" | "milli" | "millis" | "milliseconds" => {
+                dt2.signed_duration_since(dt1).num_milliseconds()
+            }
+            "microsecond" | "micro" | "micros" | "microseconds" => {
+                dt2.signed_duration_since(dt1).num_microseconds().unwrap()
+            }
+            "nanosecond" | "nanoseconds" | "nano" | "nanos" => {
+                dt2.signed_duration_since(dt1).num_nanoseconds().unwrap()
+            }
             _ => unimplemented!("{} is not implemented!", &unit),
         }
     }
@@ -312,9 +348,15 @@ impl crate::tsz::Tsz for Tsz {
                     "day" => day_fmt(ts_str, fmt_str),
                     "hour" => hour_fmt(ts_str, fmt_str),
                     "minute" => minute_fmt(ts_str, fmt_str),
-                    "millisecond" => millisecond_fmt(ts_str, fmt_str),
-                    "microsecond" => microsecond_fmt(ts_str, fmt_str),
-                    "nanosecond" => nanosecond_fmt(ts_str, fmt_str),
+                    "millisecond" | "milli" | "millis" | "milliseconds" => {
+                        millisecond_fmt(ts_str, fmt_str)
+                    }
+                    "microsecond" | "micro" | "micros" | "microseconds" => {
+                        microsecond_fmt(ts_str, fmt_str)
+                    }
+                    "nanosecond" | "nanoseconds" | "nano" | "nanos" => {
+                        nanosecond_fmt(ts_str, fmt_str)
+                    }
                     _ => unimplemented!("{} is not implemented!", &unit),
                 }
                 .to_string()
@@ -360,7 +402,79 @@ mod tests {
     const TZ_TS_NANOS: &str = "%Y-%m-%d %H:%M:%S%.9f%z";
 
     #[test]
-    fn test_naive_micros() {
+    fn test_naive_unix_timestamp() {
+        let micro_naive_tsr = "2009-02-13 23:31:30";
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "second".to_string(),
+                micro_naive_tsr.to_string(),
+                NAIVE_TS.to_string()
+            ),
+            1234567890
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "millisecond".to_string(),
+                micro_naive_tsr.to_string(),
+                NAIVE_TS.to_string()
+            ),
+            1234567890000
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "microsecond".to_string(),
+                micro_naive_tsr.to_string(),
+                NAIVE_TS.to_string()
+            ),
+            1234567890000000
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "nanosecond".to_string(),
+                micro_naive_tsr.to_string(),
+                NAIVE_TS.to_string()
+            ),
+            1234567890000000000
+        );
+    }
+    #[test]
+    fn test_tz_unix_timestamp() {
+        let micro_tz_tsr = "2009-02-13 20:31:30-03:00";
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "second".to_string(),
+                micro_tz_tsr.to_string(),
+                TZ_TS.to_string()
+            ),
+            1234567890
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "millisecond".to_string(),
+                micro_tz_tsr.to_string(),
+                TZ_TS.to_string()
+            ),
+            1234567890000
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "microsecond".to_string(),
+                micro_tz_tsr.to_string(),
+                TZ_TS.to_string()
+            ),
+            1234567890000000
+        );
+        assert_eq!(
+            <Tsz as tsz::Tsz>::unix_timestamp_fmt(
+                "nanosecond".to_string(),
+                micro_tz_tsr.to_string(),
+                TZ_TS.to_string()
+            ),
+            1234567890000000000
+        );
+    }
+    #[test]
+    fn test_naive_extract_micros() {
         let micro_naive_tsr = "2019-03-25 10:15:21.000423";
         assert_eq!(
             <Tsz as tsz::Tsz>::extract_fmt(
@@ -372,7 +486,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_tz_micros() {
+    fn test_tz_extract_micros() {
         let micro_tz_tsr = "2019-03-25 10:15:21.000423+06:00";
         assert_eq!(
             <Tsz as tsz::Tsz>::extract_fmt(
@@ -384,7 +498,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_naive_nanos() {
+    fn test_naive_extract_nanos() {
         let nano_naive_tsr = "2019-03-25 10:15:21.000423986";
         let nano_naive_dt = NaiveDateTime::parse_from_str(&nano_naive_tsr, NAIVE_TS_NANOS).unwrap();
         assert_eq!(
@@ -397,7 +511,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_tz_nanos() {
+    fn test_tz_extract_nanos() {
         let nano_tz_tsr = "2019-03-25 10:15:21.000423986-09:00";
         let nano_tz_dt = NaiveDateTime::parse_from_str(&nano_tz_tsr, TZ_TS_NANOS).unwrap();
         assert_eq!(
@@ -419,9 +533,9 @@ mod tests {
     }
     #[test]
     fn test_tz_convert_to_utc() {
-        let naive_ts_str = "2014-04-18 12:00:00+0500";
+        let tz_ts_str = "2014-04-18 12:00:00+0500";
         assert_eq!(
-            <Tsz as tsz::Tsz>::convert_to_utc_fmt(naive_ts_str.to_string(), TZ_TS.to_string()),
+            <Tsz as tsz::Tsz>::convert_to_utc_fmt(tz_ts_str.to_string(), TZ_TS.to_string()),
             "2014-04-18 07:00:00".to_string()
         );
     }
