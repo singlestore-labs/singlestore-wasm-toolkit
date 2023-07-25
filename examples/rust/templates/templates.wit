@@ -1,0 +1,3 @@
+render-json: func(json: string, template: string) -> string
+render-xml: func(xml: string, template: string) -> string
+render-yaml: func(yaml: string, template: string) -> string

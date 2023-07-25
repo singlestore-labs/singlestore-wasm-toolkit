@@ -47,7 +47,7 @@ WORKDIR /home/vscode
 
 # Setup python deps and configure rust.
 #
-RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime      \
+RUN pip3 --disable-pip-version-check --no-cache-dir install mypy wasmtime==0.37.0      \
     && rm -rf /tmp/pip-tmp                                                     \
     && bash /tmp/library-scripts/install-rust-tools.sh                         \
     && bash /tmp/library-scripts/install-wit-bindgen.sh
