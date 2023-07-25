@@ -173,9 +173,13 @@ render_yaml(yaml-string, template-string) -> string
 ## Compiling
 
 To compile the functions in the example, use the following command.
-
 ```
 cargo wasi build --lib --release
+```
+
+The Makefile can also be used to build the Wasm file.
+```
+make release
 ```
 
 ## Load functions into the database
