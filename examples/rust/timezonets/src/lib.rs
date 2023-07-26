@@ -7,18 +7,13 @@ wit_bindgen_rust::export!("tsz.wit");
 struct Tsz;
 
 fn contains_tz(fmt: &str) -> bool {
-    if fmt.contains("%z")
+    fmt.contains("%z")
         || fmt.contains("%Z")
         || fmt == "%+"
         || fmt.contains("%:z")
         || fmt.contains("%::z")
         || fmt.contains("%:::z")
         || fmt.contains("%#z")
-    {
-        true
-    } else {
-        false
-    }
 }
 
 fn year_fmt(ts: &str, fmt: &str) -> u32 {

@@ -66,8 +66,6 @@ Similar to [CONVERT_TZ](https://docs.singlestore.com/managed-service/en/referenc
 #### Return type
 Timestamp string
 
-## Usage Example
-
 ## Building
 ```
 # Install the WASI cargo extension.
