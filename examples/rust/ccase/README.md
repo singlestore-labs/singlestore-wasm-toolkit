@@ -291,5 +291,5 @@ Output:
 +-------------------------------------+
 ```
 
-# Reference
-[convert_case](https://docs.rs/convert_case/latest/convert_case/enum.Case.html#variant.Snake)
+## Acknowledgement
+Rust [convert_case](https://docs.rs/convert_case/latest/convert_case/enum.Case.html#variant.Snake) library
