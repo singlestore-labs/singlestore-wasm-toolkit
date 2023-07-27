@@ -1,0 +1,11 @@
+unix-timestamp-fmt: func(res-unit: string, ts: string, fmt: string) -> s64
+
+timestampadd-fmt: func(num-unit: string, num: s64, ts: string, fmt: string, res-fmt: string) -> string
+
+timestampdiff-fmt: func(res-unit: string, ts1: string, fmt1: string, ts2: string, fm2: string) -> s64
+
+convert-to-utc-fmt: func(ts: string, fmt: string) -> string
+
+extract-fmt: func(lunit: string, ts: string, fmt: string) -> u64
+
+convert-tz-fmt: func(ts: string, fmt: string, tz: string, res-fmt: string) -> string
