@@ -1,0 +1,57 @@
+// sumstat-naive() operation
+
+type state = s32
+type blob = list<u8>
+type input = float64
+
+// result type
+record sumstat-naive-res {
+  avg: float64,
+  min: float64,
+  max:float64,
+  p1: float64,
+  p5: float64,
+  p50: float64,
+  p95: float64,
+  p99: float64,
+}
+
+record ttest-data {
+  // The absolute difference between the samples' means.
+  effect: float64,
+
+  // The difference in means between the two samples, normalized for variance. Technically, this is Cohen's d.
+  effect-size: float64,
+
+  // The minimum allowed effect at the given confidence level.
+  critical-value: float64,
+
+  // The p-value for the test: the probability that accepting the results of this test will be a
+  // Type 1 error, in which the null hypothesis (i.e. there is no difference between the means of
+  // the two samples) will be rejected when it is in fact true.
+  p-value: float64,
+
+  // The significance level of the test. It is the maximum allowed value of the p-value.
+  alpha: float64,
+
+  // The probability of a Type 2 error: the probability that the null hypothesis will be retained
+  // despite it not being true.
+  beta: float64,
+}
+
+/* HANDLE FUNCTIONS */
+sumstat-naive-handle-init: func() -> s32
+sumstat-naive-handle-clone: func(s: state) -> s32
+sumstat-naive-handle-destroy: func(s: state) -> s32
+sumstat-naive-handle-iter: func(s: state, value: float64) -> s32
+sumstat-naive-handle-merge: func(left: s32, right: s32) -> s32
+sumstat-naive-handle-term: func(s: state) -> sumstat-naive-res
+sumstat-naive-handle-serialize: func(s: state) -> list<u8>
+sumstat-naive-handle-deserialize: func(data: list<u8>) -> s32
+sumstat-naive-handle-copymerge: func(left: state, right: state) -> s32
+
+// t-test
+sumstat-naive-t-test-one: func(s: state, mu: float64) -> float64
+sumstat-naive-t-test-paired: func(left: state, right: state, mu: float64) -> float64
+sumstat-naive-t-test-indep: func(left: state, right: state) -> float64
+sumstat-naive-t-test-indepu: func(left: state, right: state) -> float64

@@ -1,0 +1,112 @@
+wit_bindgen_rust::export!("sumstat_naive.wit");
+
+struct SumstatNaive;
+
+use::crate::sumstat_naive::SumstatNaiveState;
+use::crate::sumstat_naive::SumstatNaiveRes;
+
+impl crate::sumstat_naive::SumstatNaive for SumstatNaive {
+
+fn sumstat_naive_handle_init() -> i32 {
+        let boxed = Box::new(AvgState {
+            sum: 0.0,
+            count: 0,
+            data: Vector<f64>()
+        });
+        Box::leak(boxed) as *const AvgState as i32
+}
+
+fn sumstat_naive_handle_clone(state: i32) -> i32 {
+            let ptr = state as *mut AvgState;
+        let st = unsafe { Box::from_raw(ptr) };
+        let res = Box::new(AvgState {
+            sum: st.sum,
+            count: st.count,
+            data: st.data,
+        });
+        Box::leak(st);
+        Box::leak(res) as *const AvgState as i32
+}
+
+fn sumstat_naive_handle_destroy(state: i32) -> i32 {
+    unsafe { Box::from_raw(state as *mut AvgState) };
+    0
+}
+
+fn sumstat_naive_handle_iter(state: i32, value: f64) -> i32 {
+    let ptr = state as *mut AvgState;
+    let st = unsafe { &mut *ptr };
+    st.sum += value;
+    st.count += 1;
+    state
+}
+fn sumstat_naive_handle_merge(left: i32, right: i32) -> i32 {
+    let left_ptr = left as *mut AvgState;
+    let right_ptr = right as *mut AvgState;
+    let left_state = unsafe { Box::from_raw(left_ptr) };
+    let mut right_state = unsafe { Box::from_raw(right_ptr) };
+    right_state.sum += left_state.sum;
+    right_state.count += left_state.count;
+    right_state.extend(left_state.data);
+    Box::leak(right_state) as *const AvgState as i32
+}
+
+fn sumstat_naive_handle_term(state: i32) -> SumstatNaiveRes {
+    let ptr = state as *mut AvgState;
+    let boxed = unsafe { Box::from_raw(ptr) };
+    boxed.data.sort();
+    let cur_min = match boxed.data.first() {
+        None => f64::INFINITY;
+        Some(x) => x;
+    };
+    let cur_max = match boxed.data.last() {
+        None => -f64::INFINITY;
+        Some(x) => x;
+    };
+    let cur_p99 = match boxed.data.get((boxed.count * 0.99).ceil() - 1) {
+        None => f64::INFINITY,
+        Some(x) => x;
+    };
+    let cur_p95 = match boxed.data.get((boxed.count * 0.95).ceil() - 1) {
+        None => f64::INFINITY,
+        Some(x) => x;
+    };
+    let cur_p50 = match boxed.data.get((boxed.count * 0.50).ceil() - 1) {
+        None => f64::INFINITY,
+        Some(x) => x;
+    };
+    let cur_p1 = match boxed.data.get((boxed.count * 0.01).ceil() - 1) {
+        None => f64::INFINITY,
+        Some(x) => x;
+    };
+    let cur_p5 = match boxed.data.get((boxed.count * 0.05).ceil() - 1) {
+        None => f64::INFINITY,
+        Some(x) => x;
+    };
+    SumstatNaiveRes {
+        avg: boxed.sum / boxed.count as f64,
+        min: cur_min,
+        max: cur_max,
+        p1: cur_p1,
+        p5: cur_p5,
+        p50: cur_p50,
+        p95: cur_p95,
+        p99: cur_p99
+    }
+}
+
+fn sumstat_naive_handle_serialize(state: i32) -> list<u8> {
+    let ptr = state as *mut AvgState;
+    let boxed = unsafe { Box::from_raw(ptr) };
+    boxed.sum / boxed.count as f64
+}
+
+fn sumstat_naive_handle_deserialize(data: list<u8>) -> i32
+fn sumstat_naive_handle_copymerge(left: i32, right: i32) -> i32
+fn sumstat_naive_value_init() -> sumstat_naive_state
+fn sumstat_naive_value_iter(state: sumstat_naive_state, value: f64) -> sumstat_naive_state
+fn sumstat_naive_value_merge(left: sumstat_naive_state, right: sumstat_naive_state) -> sumstat_naive_state
+fn sumstat_naive_value_term(state: sumstat_naive_state) -> f64
+}
+
+
