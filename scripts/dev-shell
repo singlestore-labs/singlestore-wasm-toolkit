@@ -24,7 +24,7 @@ usage()
     cat<<EOF
 Usage: $0 [PROJDIR]
 
-If provided, PROJDIR specifies the root of the source directory for the 
+If provided, PROJDIR specifies the root of the source directory for the
 project you want to compile.  This will be mapped into the container under
 "/home/$USER/src".
 
@@ -55,7 +55,7 @@ get-script-dir()
     echo $SCRIPT_DIR
 }
 
-# Returns 0 if the script is running from inside the singlestore-wasm-toolkit 
+# Returns 0 if the script is running from inside the singlestore-wasm-toolkit
 # repository.
 running-in-repo()
 {
