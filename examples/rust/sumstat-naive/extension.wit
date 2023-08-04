@@ -5,6 +5,7 @@ type blob = list<u8>
 type input = float64
 
 // result type
+// TODO: might want to implement std and var?
 record sumstat-res {
   avg: float64,
   min: float64,
