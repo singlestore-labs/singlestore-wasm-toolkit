@@ -1,0 +1,2 @@
+match-schema: func(schema: string, instance: string) -> bool
+is-valid-schema: func(schema: string) -> bool
