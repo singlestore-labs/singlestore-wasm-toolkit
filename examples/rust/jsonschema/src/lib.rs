@@ -16,24 +16,20 @@ impl extension::Extension for Extension {
         compiler.add_resource(DEFAULT_SCHEMA_URL, schema).unwrap();
         let sch_index = compiler.compile(DEFAULT_SCHEMA_URL, &mut schemas).unwrap();
         let result = schemas.validate(&instance, sch_index);
-        if result.is_err() {
-            false
+        if !result.is_err() {
+            return true;
         }
-        else {
-            true
-        }
+        false
     }
 
     fn is_valid_schema(schema_str: String) -> bool {
         let schema: Value = serde_json::from_str(schema_str.as_str()).unwrap();
         let mut compiler = Compiler::new();
         let is_valid = compiler.add_resource(DEFAULT_SCHEMA_URL, schema);
-        if is_valid.is_err() {
-            false
+        if !is_valid.is_err() {
+            return true;
         }
-        else {
-            true
-        }
+        false
     }
 }
 
@@ -46,7 +42,10 @@ mod tests {
     fn test_from_string_naive() {
         let naive_schema = r#"{"type": "object"}"#.to_string();
         let naive_input = r#"{"foo": "bar"}"#.to_string();
-        assert_eq!(<Extension as extension::Extension>::match_schema(naive_schema, naive_input), true);
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(naive_schema, naive_input),
+            true
+        );
     }
 
     #[test]
@@ -55,8 +54,17 @@ mod tests {
         let number_str_pass = "123".to_string();
         let number_str_fail = r#""meow""#.to_string();
 
-        assert_eq!(<Extension as extension::Extension>::match_schema(number_schema.clone(), number_str_pass), true);
-        assert_eq!(<Extension as extension::Extension>::match_schema(number_schema, number_str_fail), false);
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(
+                number_schema.clone(),
+                number_str_pass
+            ),
+            true
+        );
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(number_schema, number_str_fail),
+            false
+        );
     }
 
     #[test]
@@ -70,21 +78,45 @@ mod tests {
                                     },
                                     "required": ["foo"],
                                     "additionalProperties": false
-                                }"#.to_string();
+                                }"#
+        .to_string();
         let required_input_pass = r#"{"foo": "bar"}"#.to_string();
         let required_input_fail = r#"{"hi" : "bar"}"#.to_string();
         let required_input_fail_2 = r#"{"foo": "bar", "hi": "bar"}"#.to_string();
-        assert_eq!(<Extension as extension::Extension>::match_schema(required_schema.clone(), required_input_pass), true);
-        assert_eq!(<Extension as extension::Extension>::match_schema(required_schema.clone(), required_input_fail), false);
-        assert_eq!(<Extension as extension::Extension>::match_schema(required_schema, required_input_fail_2), false);
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(
+                required_schema.clone(),
+                required_input_pass
+            ),
+            true
+        );
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(
+                required_schema.clone(),
+                required_input_fail
+            ),
+            false
+        );
+        assert_eq!(
+            <Extension as extension::Extension>::match_schema(
+                required_schema,
+                required_input_fail_2
+            ),
+            false
+        );
     }
 
     #[test]
     fn test_is_valid_schema() {
         let valid_schema = r#"{"type": "integer"}"#.to_string();
         let not_valid_schema = r#"{"type": "int"}"#.to_string();
-        assert_eq!(<Extension as extension::Extension>::is_valid_schema(valid_schema), true);
-        assert_eq!(<Extension as extension::Extension>::is_valid_schema(not_valid_schema), false);
+        assert_eq!(
+            <Extension as extension::Extension>::is_valid_schema(valid_schema),
+            true
+        );
+        assert_eq!(
+            <Extension as extension::Extension>::is_valid_schema(not_valid_schema),
+            false
+        );
     }
 }
-
