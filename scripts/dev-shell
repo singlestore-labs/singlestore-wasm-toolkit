@@ -126,8 +126,14 @@ if [ $PULL -eq 1 ] ; then
     PULL_OPT="--pull always"
 fi
 
+ENTRY_POINT_DIR_OPT=/entry
+if [ -n "$ENTRY_POINT_DIR" ] ; then
+    ENTRY_POINT_DIR_OPT="$ENTRY_POINT_DIR:$ENTRY_POINT_DIR_OPT"
+fi
+ENTRY_POINT_DIR_OPT="-v $ENTRY_POINT_DIR_OPT"
+
 "${DOCKER}" run ${PULL_OPT} -it --rm \
-    -v "${ENTRY_POINT_DIR}":/entry \
+    ${ENTRY_POINT_DIR_OPT} \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
