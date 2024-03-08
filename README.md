@@ -1,5 +1,7 @@
 # SingleStore Wasm Toolkit, Tutorial, And Examples
 
+**Attention**: The code in this repository is intended for experimental use only and is not fully tested, documented, or supported by SingleStore. Visit the [SingleStore Forums](https://www.singlestore.com/forum/) to ask questions about this repository.
+
 This repository provides utilities and documentation intended to help you streamline development of Wasm UDFs and TVFs for SingleStoreDB.  It consists of development containers, a tutorial, and a collection of example Wasm programs.
 
 This README describes the technical details on how to get started using this toolkit.  Please also check out our [tutorial](https://singlestore-labs.github.io/singlestore-wasm-toolkit/html/Tutorial-Overview.html), which is great place to start once you are ready to write your first function, and will walk you through specific examples.
