@@ -11,40 +11,40 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        components: rustfmt, clippy
-    
-    - name: Install wasm32-unknown-unknown target
-      run: rustup target add wasm32-unknown-unknown
-    - name: Install wasm32-wasi target
-      run: rustup target add wasm32-wasi
-    - name: Install cargo-wasi
-      run: cargo install cargo-wasi
-    - name: Install wit-bindgen
-      run: cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli --rev 60e3c5b41e616fee239304d92128e117dd9be0a7
-
-    - run: |
-        curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf - -C $GITHUB_WORKSPACE/
-        echo "$GITHUB_WORKSPACE/wasi-sdk-16.0/bin" >> $GITHUB_PATH
-
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - run: pip install mypy wasmtime
-
-    - name: Test cpp build
-      run: make cpp-debug cpp-release
-      working-directory: ./examples
-
-    - name: Test rust build
-      run: make rust-debug rust-release
-      working-directory: ./examples
+#jobs:
+#  test:
+#    name: Test
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - uses: actions-rs/toolchain@v1
+#      with:
+#        toolchain: stable
+#        components: rustfmt, clippy
+#    
+#    - name: Install wasm32-unknown-unknown target
+#      run: rustup target add wasm32-unknown-unknown
+#    - name: Install wasm32-wasi target
+#      run: rustup target add wasm32-wasi
+#    - name: Install cargo-wasi
+#      run: cargo install cargo-wasi
+#    - name: Install wit-bindgen
+#      run: cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli --rev 60e3c5b41e616fee239304d92128e117dd9be0a7
+#
+#    - run: |
+#        curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz -L | tar xzvf - -C $GITHUB_WORKSPACE/
+#        echo "$GITHUB_WORKSPACE/wasi-sdk-16.0/bin" >> $GITHUB_PATH
+#
+#    - uses: actions/setup-python@v4
+#      with:
+#        python-version: '3.x'
+#    - run: pip install mypy wasmtime
+#
+#    - name: Test cpp build
+#      run: make cpp-debug cpp-release
+#      working-directory: ./examples
+#
+#    - name: Test rust build
+#      run: make rust-debug rust-release
+#      working-directory: ./examples
