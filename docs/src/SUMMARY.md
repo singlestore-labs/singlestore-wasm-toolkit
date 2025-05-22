@@ -2,10 +2,6 @@
 
 - [Overview](Tutorial-Overview.md)
 - [Setup](Tutorial-Setup.md)
-	- [With a Development Container](Tutorial-Setup-Container.md)
-		- [VS Code Container](Tutorial-Setup-Container-VSCode.md)
-		- [Standalone Container](Tutorial-Setup-Container-Standalone.md)
-	- [Locally](Tutorial-Setup-Local.md)
 - [Examples](Tutorial-Examples.md)
 - [Writing WIT IDL](Tutorial-WIT.md)
 	- [WIT for the `power-of` Example](Tutorial-WIT-Power.md)

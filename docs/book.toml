@@ -3,7 +3,7 @@ authors = ["Bailey Hayes", "Peter Vetere", "Kyle Brown"]
 language = "en"
 multilingual = false
 src = "src"
-title = "SingleStore Wasm Toolkit"
+title = "SingleStore Wasm Tutorial"
 
 [output.html]
 
