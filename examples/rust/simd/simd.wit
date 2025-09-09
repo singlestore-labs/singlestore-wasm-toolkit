@@ -1,0 +1,4 @@
+u64x2-scalar-mul: func(a: u64, b: list<u64>) -> list<u64>
+u64x2-dot: func(a: list<u64>, b: list<u64>) -> u64
+u64x2-inner: func(a: list<u64>, b: list<u64>) -> list<u64>
+u64x2-mat-mul: func(a: list<list<u64>>, b: list<list<u64>>) -> list<list<u64>>
