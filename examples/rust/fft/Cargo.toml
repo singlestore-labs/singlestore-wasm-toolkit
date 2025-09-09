@@ -1,0 +1,20 @@
+[package]
+name = "fft"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git", rev = "60e3c5b41e616fee239304d92128e117dd9be0a7" }
+rustfft = "6.1.0"
+num-complex = "0.4.3"
+serde_json = "1.0.97"
+serde = { version = "1.0.164", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[[bin]]
+name = "test"
+path = "test/main.rs"
+

@@ -1,0 +1,9 @@
+record stcomplex64 {
+  re: float64,
+  im: float64
+}
+
+st-process-forward: func(l: u8, buf: list<stcomplex64>) -> list<stcomplex64>
+st-process-inverse: func(l: u8, buf: list<stcomplex64>) -> list<stcomplex64>
+st-scalar-process-forward: func(l: u8, buf: list<stcomplex64>) -> list<stcomplex64>
+st-scalar-process-inverse: func(l: u8, buf: list<stcomplex64>) -> list<stcomplex64>
