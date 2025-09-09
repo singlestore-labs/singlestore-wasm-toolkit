@@ -183,7 +183,12 @@ if [ -n "$COMMAND_SCRIPT_DIR" ] ; then
     RUNME="/command/`basename $COMMAND_SCRIPT_FILE`"
 fi
 
-"${DOCKER}" run ${PULL_OPT} -it --rm \
+INTERACTIVE_OPT="-it"
+if [ -n "$RUNME" ] ; then
+    INTERACTIVE_OPT=
+fi
+
+"${DOCKER}" run ${PULL_OPT} ${INTERACTIVE_OPT} --rm \
     ${ENTRY_POINT_DIR_OPT} \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
