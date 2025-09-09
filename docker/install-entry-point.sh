@@ -14,8 +14,8 @@ if [ ! -f /.dockerenv ] ; then
     exit 1
 fi
 
-if [ \$# -ne 4 ] ; then
-    echo "Usage: \$0 UID GID USER GROUP"
+if [ \$# -lt 4 -o \$# -gt 5 ] ; then
+    echo "Usage: \$0 UID GID USER GROUP [SCRIPT]"
     exit 1
 fi
 
@@ -23,6 +23,7 @@ XUID=\$1
 XGID=\$2
 XUSER=\$3
 XGROUP=\$4
+XSCRIPT="\$5"
 
 sudo groupadd -f --gid \$XGID \$XGROUP
 sudo useradd -l --no-create-home --uid \$XUID --gid \$XGID --groups $STAGE_GID --shell /bin/bash \$XUSER
@@ -35,7 +36,12 @@ done
 
 sudo chown \$XUID:\$XGID /home/\$XUSER
 [ -d /home/\$XUSER/src ] && cd /home/\$XUSER/src
-exec sudo -H -u \$XUSER bash
+
+XCMD=bash
+if [ -n "\$XSCRIPT" ] ; then
+    XCMD="\$XCMD \$XSCRIPT"
+fi
+exec sudo -H -u \$XUSER \$XCMD
 EOF
 }
 

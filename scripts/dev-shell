@@ -3,6 +3,8 @@ set -eu
 
 ENTRY_POINT_FILE=
 ENTRY_POINT_DIR=
+COMMAND_SCRIPT_FILE=
+COMMAND_SCRIPT_DIR=
 
 DOCKER=$(command -v docker)
 if [ -z "${DOCKER}" ] ; then
@@ -16,17 +18,26 @@ cleanup()
         rm -f "$ENTRY_POINT_FILE"
         rmdir "$ENTRY_POINT_DIR"
     fi
+    if [ -n "$COMMAND_SCRIPT_DIR" ] ; then
+        rm -f "$COMMAND_SCRIPT_FILE"
+        rmdir "$COMMAND_SCRIPT_DIR"
+    fi
 }
 trap "cleanup" EXIT
 
 usage()
 {
     cat<<EOF
-Usage: $0 [PROJDIR]
+Usage: $0 [PROJDIR] [--script SCRIPT | -- COMMAND]
 
 If provided, PROJDIR specifies the root of the source directory for the 
 project you want to compile.  This will be mapped into the container under
 "/home/$USER/src".
+
+By default, the shell is run in interactive mode.  It can be run in
+non-interactive mode by "--", followed by a command.  If the command references
+any custom scripts, they should be relative to PROJDIR so that they can be
+found inside the container.
 
 To rebuild the image, run "./scripts/dev-shell --rebuild ."
 EOF
@@ -78,19 +89,52 @@ while [ $# -gt 0 ] ; do
         --rebuild)
             REBUILD=1
             ;;
+        -*)
+            usage
+            ;;
         *)
             break
             ;;
     esac
     shift
 done
-[ $# -gt 1 ] && usage
 
 PROJ_DIR="${1:-}"
 if [ -n "${PROJ_DIR}" ] ; then
     PROJ_DIR="$(cd "${PROJ_DIR}" && pwd -P)"
     if [ ! -d "${PROJ_DIR}" ] ; then
         abort "Specified project directory '${PROJ_DIR}' does not exist."
+    fi
+fi
+shift
+
+NONINTERACTIVE=0
+SCRIPT=
+if [ $# -gt 0 ] ; then
+    case "$1" in
+        --script|-s)
+            shift
+            NONINTERACTIVE=1
+            SCRIPT="$1"
+            ;;
+        --)
+            NONINTERACTIVE=1
+            ;;
+        *)
+            usage
+            ;;
+    esac
+    shift
+fi
+[ -n "$SCRIPT" -a $# -gt 0 ] && usage
+
+if [ $NONINTERACTIVE -eq 1 ] ; then
+    COMMAND_SCRIPT_DIR=`mktemp -d`
+    COMMAND_SCRIPT_FILE="$COMMAND_SCRIPT_DIR/runme.sh"
+    if [ -n "$SCRIPT" ] ; then
+        cp "$SCRIPT" "$COMMAND_SCRIPT_FILE"
+    else
+        echo "$@" > "$COMMAND_SCRIPT_FILE"
     fi
 fi
 
@@ -132,13 +176,21 @@ if [ -n "$ENTRY_POINT_DIR" ] ; then
 fi
 ENTRY_POINT_DIR_OPT="-v $ENTRY_POINT_DIR_OPT"
 
+COMMAND_SCRIPT_DIR_OPT=
+RUNME=
+if [ -n "$COMMAND_SCRIPT_DIR" ] ; then
+    COMMAND_SCRIPT_DIR_OPT="-v ${COMMAND_SCRIPT_DIR}:/command"
+    RUNME="/command/`basename $COMMAND_SCRIPT_FILE`"
+fi
+
 "${DOCKER}" run ${PULL_OPT} -it --rm \
     ${ENTRY_POINT_DIR_OPT} \
     ${MAP_REPO_DIR_OPT} \
     ${MAP_PROJ_DIR_OPT} \
     ${SET_WORK_DIR_OPT} \
+    ${COMMAND_SCRIPT_DIR_OPT} \
     ghcr.io/singlestore-labs/singlestore-wasm-toolkit-shell:latest \
-    /entry/dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn)
+    /entry/dev-shell-init $(id -u) $(id -g) $(id -un) $(id -gn) "$RUNME"
 
 check-err "Failed to run docker image."
 
