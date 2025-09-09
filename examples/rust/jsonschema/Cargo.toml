@@ -1,0 +1,12 @@
+[package]
+name = "extension"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen.git", rev = "60e3c5b41e616fee239304d92128e117dd9be0a7" }
+boon = { version = "0.5.1" }
+serde_json = { version = "1" }
