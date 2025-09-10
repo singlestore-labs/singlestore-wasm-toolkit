@@ -1,7 +1,7 @@
 #!/bin/sh
 # assumes rust and cargo are already installed
 
-rustup target add wasm32-wasi wasm32-unknown-unknown
+rustup target add wasm32-wasip1 wasm32-unknown-unknown
 
 rustup component add rust-src rustfmt clippy
 
