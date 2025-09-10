@@ -128,13 +128,20 @@ if [ $# -gt 0 ] ; then
 fi
 [ -n "$SCRIPT" -a $# -gt 0 ] && usage
 
+COMMAND_SCRIPT_DIR_OPT=
+RUNME=
 if [ $NONINTERACTIVE -eq 1 ] ; then
     COMMAND_SCRIPT_DIR=`mktemp -d`
     COMMAND_SCRIPT_FILE="$COMMAND_SCRIPT_DIR/runme.sh"
+    COMMAND_SCRIPT_DIR_OPT="-v ${COMMAND_SCRIPT_DIR}:/command"
+    RUNME="/command/`basename $COMMAND_SCRIPT_FILE`"
+    
+    echo ". ~/.profile" > $COMMAND_SCRIPT_FILE
+
     if [ -n "$SCRIPT" ] ; then
-        cp "$SCRIPT" "$COMMAND_SCRIPT_FILE"
+        cat "$SCRIPT" >> "$COMMAND_SCRIPT_FILE"
     else
-        echo "$@" > "$COMMAND_SCRIPT_FILE"
+        echo "$@" >> "$COMMAND_SCRIPT_FILE"
     fi
 fi
 
@@ -176,15 +183,8 @@ if [ -n "$ENTRY_POINT_DIR" ] ; then
 fi
 ENTRY_POINT_DIR_OPT="-v $ENTRY_POINT_DIR_OPT"
 
-COMMAND_SCRIPT_DIR_OPT=
-RUNME=
-if [ -n "$COMMAND_SCRIPT_DIR" ] ; then
-    COMMAND_SCRIPT_DIR_OPT="-v ${COMMAND_SCRIPT_DIR}:/command"
-    RUNME="/command/`basename $COMMAND_SCRIPT_FILE`"
-fi
-
 INTERACTIVE_OPT="-it"
-if [ -n "$RUNME" ] ; then
+if [ $NONINTERACTIVE -eq 1 ] ; then
     INTERACTIVE_OPT=
 fi
 
