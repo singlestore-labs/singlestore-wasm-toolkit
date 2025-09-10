@@ -16,7 +16,7 @@ power.wasm: gen
 	    power.c
 
 .PHONY: test
-test: debug
+test:
 	writ --expect 8 --wit power.wit power.wasm power-of 2 3
 	@echo PASS
 	writ --expect 1 --wit power.wit power.wasm power-of 2 0
